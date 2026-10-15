@@ -1,0 +1,117 @@
+import mongoose from 'mongoose'
+const pharmacySchema =new mongoose.Schema(
+    {
+        user:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'User',
+            required:true,
+            unique:true
+        },
+        pharmacyName:{
+            type:String,
+            required:true,
+            trim:true
+    },
+    image:{
+        type:String,
+        default:''
+    },
+    ownerName:{
+    type:String,
+    required:true,
+    trim:true
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true,
+        lowercase:true,
+        trim:true
+    },
+    phone:{
+        type:String,
+        required:true,
+        trim:true
+    },
+    pharmacyType:{
+        type:String,
+        enum:['hospital','local'],
+        required:true
+    },
+    licenseNumber:{
+        type:String,
+        required:true,
+        unique:true,
+        trim:true
+    },
+    licenseDocument:{
+        type:String
+    },
+    licenseVerification:{
+        status:{
+            type:String,
+            enum:['pending','verified','suspicious','failed'],
+            default:'pending'
+        },
+        confidence:{
+            type:Number,
+            default:0
+        },
+        extractedData:{
+            licenseNumber:String,
+            pharmacyName:String,
+            ownerName: String,
+            expiryDate:Date
+        },
+        aiReason:{
+            type:String,
+            default:''
+
+        },
+        verifiedAt:Date
+    },
+    address:{
+        street:{
+            type:String,
+            trim:true
+        },
+        city:{
+            type:String,
+            trim:true
+        },
+        state:{
+            type:String,
+            trim:true
+        },
+        pincode:{
+            type:String,
+            trim:true
+        }
+    },
+    location:{
+        latitude:{
+            type:Number
+        },
+        longitude:{
+            type:Number
+        }
+    },
+    approvalStatus:{
+        type:String,
+        enum:['pending','approved','rejected'],
+        default:'pending'
+    },
+    isActive:{
+        type:Boolean,
+        default:false
+    }
+
+    },
+    {
+    timestamps:true
+    }
+)
+
+const Pharmacy = mongoose.model('Pharmacy',pharmacySchema)
+
+export default Pharmacy;

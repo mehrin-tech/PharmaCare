@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PharmaCare Razorpay Test</title>
+</head>
+
+<body>
+
+    <h2>PharmaCare Razorpay Test</h2>
+
+    <button onclick="payNow()">Pay ₹65</button>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+
+        function payNow() {
+
+            const options = {
+
+                key: "rzp_test_Tb1hll1GLuObYE",
+
+                amount: 6500,
+
+                currency: "INR",
+
+                name: "PharmaCare",
+
+                description: "Medicine Order Payment",
+
+                order_id: "order_Tb1k3pAUXqOPNt",
+
+                handler: function (response) {
+
+                    console.log("Payment ID:",
+                        response.razorpay_payment_id)
+
+                    console.log("Order ID:",
+                        response.razorpay_order_id)
+
+                    console.log("Signature:",
+                        response.razorpay_signature)
+
+                    alert(
+                        "Payment successful!\n\n" +
+                        "Payment ID: " +
+                        response.razorpay_payment_id
+                    )
+                },
+
+                prefill: {
+                    name: "Meharin",
+                    contact: "9999999999"
+                },
+
+                theme: {
+                    color: "#3399cc"
+                }
+            }
+
+            const razorpay = new Razorpay(options)
+
+            razorpay.open()
+        }
+
+    </script>
+
+</body>
+
+</html>
