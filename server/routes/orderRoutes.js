@@ -1,5 +1,5 @@
 import express from 'express'
-import {createOrder, getMyOrders,getOrderDetails,updateOrderStatus,trackOrder,getPharmacyOrders,cancelOrder} from '../controllers/orderController.js'
+import {createOrder, getMyOrders,getOrderDetails,updateOrderStatus,trackOrder,getPharmacyOrders,cancelOrder,confirmCashReceived} from '../controllers/orderController.js'
 
 
 import {protect} from '../middleware/authMiddleware.js'
@@ -19,5 +19,11 @@ router.patch(
   "/:orderId/cancel",
   protect,
   cancelOrder
+);
+router.patch(
+  "/:orderId/confirm-cash",
+  protect,
+  authorize("pharmacy"),
+  confirmCashReceived
 );
 export default router

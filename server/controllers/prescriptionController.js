@@ -30,6 +30,12 @@ export const uploadPrescription=async(req,res)=>{
         });
 
 
+        if (!medicine.prescriptionRequired) {
+  return res.status(400).json({
+    success: false,
+    message: "This medicine does not require a prescription"
+  });
+}
         if (!medicine) {
             return res.status(404).json({
                 success: false,

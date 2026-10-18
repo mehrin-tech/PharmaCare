@@ -23,6 +23,9 @@ import  PharmacyRegistration from '../pages/auth/PharmacyRegistration'
 import Inventory from '../pages/Pharmacy/Inventory'
 import PharmacyProfile from '../pages/Pharmacy/PharmacyProfile'
 import PrescriptionManagement from "../pages/Pharmacy/PrescriptionManagement";
+import OrderManagement from "../pages/Pharmacy/OrderManagement";
+import SalesReport from "../pages/Pharmacy/SalesReport";
+import PharmacyDashbaord from "../pages/Pharmacy/PharmacyDashbaord";
 function AppRoutes(){
     return(
         <Routes>
@@ -66,6 +69,9 @@ function AppRoutes(){
 <Route path="inventory" element={<Inventory />} />
 <Route path='profile' element={<PharmacyProfile/>} />
 <Route path="prescriptions"  element={<PrescriptionManagement/>}/>
+<Route path="orders" element={<OrderManagement/>} />
+<Route  path="sales&reports" element={<SalesReport/>}/>
+<Route  path="dashboard" element={<PharmacyDashbaord/>}/>
 </Route>
 
 

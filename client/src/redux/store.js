@@ -13,6 +13,7 @@ import notificationReducer from "./slices/notificationSlice";
 import medicineReducer from "./slices/medicineSlice";
 import inventoryReducer from "./slices/inventorySlice";
 import profileReducer from "./slices/ProfileSlice";
+import salesReportReducer from "./slices/salesReportSlice";
 
 
 export const store=configureStore({
@@ -31,5 +32,6 @@ export const store=configureStore({
         medicines: medicineReducer,
         inventory: inventoryReducer,
         profile: profileReducer,
+        salesReport: salesReportReducer,
     }
 })

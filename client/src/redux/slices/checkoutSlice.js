@@ -39,7 +39,7 @@ const checkoutSlice=createSlice({
         setSelectedPharmacy:(state,action)=>{
             state.selectedPharmacy=action.payload
         },
-        setSelectedDeliveryMethods:(state,action)=>{
+        setSelectedDeliveryMethod:(state,action)=>{
             state.selectedDeliveryMethod=action.payload
         },
         setSelectedPaymentMethod:(state,action)=>{

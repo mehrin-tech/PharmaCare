@@ -6,9 +6,9 @@ const InventoryTable = ({
   medicines = [],
   onView,
   onEdit,
-  onAdjustStock,
-  onAddStock,
-  onStockHistory,
+  // onAdjustStock,
+  // onAddStock,
+  // onStockHistory,
   onDelete,
 }) => {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -203,9 +203,9 @@ const InventoryTable = ({
                         {[
                           ["View Details", onView],
                           ["Edit Medicine", onEdit],
-                          ["Adjust Stock", onAdjustStock],
-                          ["Add Stock", onAddStock],
-                          ["Stock History", onStockHistory],
+                          // ["Adjust Stock", onAdjustStock],
+                          // ["Add Stock", onAddStock],
+                          // ["Stock History", onStockHistory],
                           ["Delete Medicine", onDelete],
                         ].map(([label, handler]) => (
                           <button

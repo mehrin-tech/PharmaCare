@@ -48,7 +48,7 @@ function DeliveryOptions() {
             <div
               key={option.id}
               onClick={() =>
-                setSelectedDeliveryMethod(option.id)
+                dispatch(setSelectedDeliveryMethod(option.id))
               }
               className={`cursor-pointer rounded-lg border p-3 transition ${
                 isSelected

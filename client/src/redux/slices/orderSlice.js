@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../services/api";
-import { ListOrderedIcon } from "lucide-react";
+
 
 
 export const getMyOrders=createAsyncThunk(
@@ -69,10 +69,65 @@ export const getOrderDetails = createAsyncThunk(
   }
 );
 
+// FETCH PHARMACY ORDERS
+export const getPharmacyOrders = createAsyncThunk(
+  "orders/getPharmacyOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/orders/pharmacy");
+       console.log("PHARMACY ORDERS RESPONSE:", response.data);
+      return response.data.orders || [];
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to fetch pharmacy orders"
+      );
+    }
+  }
+);
+
+// UPDATE PHARMACY ORDER STATUS
+export const updateOrderStatus = createAsyncThunk(
+  "orders/updateOrderStatus",
+  async ({ orderId, status }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(
+        `/orders/${orderId}/status`,
+        { status }
+      );
+
+      return response.data.order;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to update order status"
+      );
+    }
+  }
+);
+// CONFIRM COD CASH RECEIVED
+export const confirmCashReceived = createAsyncThunk(
+  "orders/confirmCashReceived",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(
+        `/orders/${orderId}/confirm-cash`
+      );
+
+      return response.data.order;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to confirm cash payment"
+      );
+    }
+  }
+);
+
 const initialState = {
+  // Customer
   orders: [],
   selectedOrder: null,
-
   trackingOrder: null,
 
   loading: false,
@@ -82,6 +137,13 @@ const initialState = {
   error: null,
   orderDetailsError: null,
   trackingError: null,
+
+  // Pharmacy
+  pharmacyOrders: [],
+  pharmacyOrdersLoading: false,
+  pharmacyOrdersError: null,
+  orderActionLoading: false,
+  orderActionError: null,
 };
 
 const orderSlice=createSlice({
@@ -176,6 +238,62 @@ const orderSlice=createSlice({
 
   state.orderDetailsError =
     action.payload;
+})
+
+// FETCH PHARMACY ORDERS
+.addCase(getPharmacyOrders.pending, (state) => {
+  state.pharmacyOrdersLoading = true;
+  state.pharmacyOrdersError = null;
+})
+.addCase(getPharmacyOrders.fulfilled, (state, action) => {
+  state.pharmacyOrdersLoading = false;
+  state.pharmacyOrders = action.payload;
+})
+.addCase(getPharmacyOrders.rejected, (state, action) => {
+  state.pharmacyOrdersLoading = false;
+  state.pharmacyOrdersError =
+    action.payload || "Failed to fetch pharmacy orders";
+})
+
+// UPDATE ORDER STATUS
+.addCase(updateOrderStatus.pending, (state) => {
+  state.orderActionLoading = true;
+  state.orderActionError = null;
+})
+.addCase(updateOrderStatus.fulfilled, (state, action) => {
+  state.orderActionLoading = false;
+
+  state.pharmacyOrders = state.pharmacyOrders.map((order) =>
+    order._id === action.payload._id
+      ? { ...order, ...action.payload }
+      : order
+  );
+})
+.addCase(updateOrderStatus.rejected, (state, action) => {
+  state.orderActionLoading = false;
+  state.orderActionError =
+    action.payload || "Failed to update order status";
+})
+// CONFIRM COD CASH RECEIVED
+.addCase(confirmCashReceived.pending, (state) => {
+  state.orderActionLoading = true;
+  state.orderActionError = null;
+})
+
+.addCase(confirmCashReceived.fulfilled, (state, action) => {
+  state.orderActionLoading = false;
+
+  state.pharmacyOrders = state.pharmacyOrders.map((order) =>
+    order._id === action.payload._id
+      ? { ...order, ...action.payload }
+      : order
+  );
+})
+
+.addCase(confirmCashReceived.rejected, (state, action) => {
+  state.orderActionLoading = false;
+  state.orderActionError =
+    action.payload || "Failed to confirm cash payment";
 })
 }
     

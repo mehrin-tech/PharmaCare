@@ -58,7 +58,7 @@ const PaymentMethods = () => {
             <div
               key={method.id}
               onClick={() =>
-                setSelectedPaymentMethod(method.id)
+                dispatch(setSelectedPaymentMethod(method.id))
               }
               className={`cursor-pointer rounded-lg border p-4 transition ${
                 isSelected

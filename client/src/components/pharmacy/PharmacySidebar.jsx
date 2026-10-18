@@ -3,7 +3,7 @@ import { LayoutDashboard,Pill,ClipboardList,ShoppingBag,  Package,
   Truck,
   UserRound,
   LogOut,
-  HeartPulse,
+  HeartPulse,ChartNoAxesCombined,
   X, } from "lucide-react";
 import medicinesImg from '../../assets/medcines.png'
   const menuItems=[
@@ -33,16 +33,22 @@ import medicinesImg from '../../assets/medcines.png'
     path: "/pharmacy/inventory",
     icon: Package,
   },
-  {
-    name: "Deliveries",
-    path: "/pharmacy/deliveries",
-    icon: Truck,
+  // {
+  //   name: "Deliveries",
+  //   path: "/pharmacy/deliveries",
+  //   icon: Truck,
+  // },
+   {
+    name: "Sales & Reports",
+    path: "/pharmacy/sales&reports",
+    icon: ChartNoAxesCombined,
   },
   {
     name: "Profile",
     path: "/pharmacy/profile",
     icon: UserRound,
   },
+
   ]
 const PharmacySidebar=({isOpen=true,onClose})=>{
     return (
@@ -126,7 +132,8 @@ const PharmacySidebar=({isOpen=true,onClose})=>{
           <button
             type="button"
             onClick={() => {
-              // Connect your existing logout function here.
+              localStorage.removeItem('token');
+              window.location.href='/login'
             }}
             className="flex h-[46px] w-full items-center gap-4
               rounded-xl px-3 text-[13px] text-gray-500

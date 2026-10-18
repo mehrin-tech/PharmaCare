@@ -6,7 +6,7 @@ import InventoryTable from
 import InventoryStats from "../../components/pharmacy/Inventory/InventoryStats";
 import MedicineToolbar from "../../components/pharmacy/Medicines/MedicineToolbar";
 
-import { fetchMyMedicines } from "../../redux/slices/medicineSlice";
+import { fetchMyMedicines,deleteMedicine } from "../../redux/slices/medicineSlice";
 import { setInventory } from "../../redux/slices/inventorySlice";
 import MedicineDetailsModal from "../../components/pharmacy/Medicines/MedicineDetailsModal";
 import EditMedicineModal from "../../components/pharmacy/Medicines/EditMedicineModal";
@@ -118,15 +118,7 @@ const handleConfirmDelete = async () => {
   }
 };
 
-// const handleAddStock = () => {
-//   setStockMedicine(null);
-//   setIsAddStockOpen(true);
-// };
 
-const handleAddStockForMedicine = (medicine) => {
-  setStockMedicine(medicine);
-  setIsAddStockOpen(true);
-};
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -181,15 +173,8 @@ const handleAddStockForMedicine = (medicine) => {
   onView={handleViewMedicine}
   onEdit={handleEditMedicine}
   onDelete={handleDeleteMedicine}
-  onAddStock={(medicine) => {
-    console.log("Add stock:", medicine);
-  }}
-  onAdjustStock={(medicine) => {
-    console.log("Adjust stock:", medicine);
-  }}
-  onStockHistory={(medicine) => {
-    console.log("Stock history:", medicine);
-  }}
+ 
+
 />
 <MedicineDetailsModal
   medicine={selectedMedicine}
@@ -203,20 +188,47 @@ const handleAddStockForMedicine = (medicine) => {
   isOpen={Boolean(editingMedicine)}
   onClose={handleCloseEdit}
 />
-{/* <AddStockModal
-  isOpen={isAddStockOpen}
-  medicines={medicines}
-  selectedMedicine={stockMedicine}
-  onAddStock={handleAddStockForMedicine}
-  onClose={() => {
-    setIsAddStockOpen(false);
-    setStockMedicine(null);
-  }}
-  onConfirm={({ medicineId, quantity }) => {
-    console.log("Add stock:", { medicineId, quantity });
-    // Next step: Redux action connect cheyyam
-  }}
-/> */}
+
+
+{/* Delete Confirmation Modal */}
+{deletingMedicine && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+      <h2 className="text-lg font-semibold text-gray-900">
+        Delete Medicine?
+      </h2>
+
+      <p className="mt-2 text-sm text-gray-600">
+        Are you sure you want to delete{" "}
+        <span className="font-semibold text-gray-900">
+          {deletingMedicine.name || deletingMedicine.medicineName}
+        </span>
+        ? This action cannot be undone.
+      </p>
+
+      <div className="mt-6 flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={handleCancelDelete}
+          disabled={loading}
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          onClick={handleConfirmDelete}
+          disabled={loading}
+          className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? "Deleting..." : "Delete Medicine"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       </div>
     </div>

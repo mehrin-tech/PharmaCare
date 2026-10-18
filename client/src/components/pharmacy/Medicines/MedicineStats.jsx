@@ -1,35 +1,71 @@
-
-import React from "react";
-import { Pill, ShoppingBag, IndianRupee, AlertTriangle } from "lucide-react";
-
-const stats = [
-  {
-    title: "Total Medicines",
-    value: "120",
-    icon: Pill,
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    title: "Total Orders",
-    value: "85",
-    icon: ShoppingBag,
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    title: "Total Revenue",
-    value: "₹12,500",
-    icon: IndianRupee,
-    color: "bg-purple-100 text-purple-600",
-  },
-  {
-    title: "Low Stock Items",
-    value: "8",
-    icon: AlertTriangle,
-    color: "bg-orange-100 text-orange-600",
-  },
-];
+import React, { useEffect } from "react";
+import { useSelector,useDispatch } from "react-redux";
+import {
+  Pill,
+  ShoppingBag,
+  IndianRupee,
+  AlertTriangle,
+} from "lucide-react";
+import { getPharmacyOrders } from "../../../redux/slices/orderSlice";
 
 const MedicineStats = () => {
+const dispatch=useDispatch()
+  const medicines = useSelector(
+    (state) => state.medicines.medicines ?? []
+  );
+
+  const pharmacyOrders=useSelector((state)=>state.orders.pharmacyOrders ?? [])
+   useEffect(() => {
+    dispatch(getPharmacyOrders());
+  }, [dispatch]);
+
+  const totalMedicines = medicines.length;
+
+  const lowStockItems = medicines.filter((medicine) => {
+    const stock = Number(medicine.stockQuantity ?? medicine.stock ?? 0);
+    const minStock = Number(medicine.minStock ?? 10);
+
+    return stock <= minStock;
+  }).length;
+
+  const totalOrders=pharmacyOrders.length
+  const totalRevenue = pharmacyOrders
+  .filter(
+    (order) =>
+      order.paymentStatus === "paid" &&
+      order.orderStatus !== "cancelled"
+  )
+  .reduce(
+    (total, order) => total + Number(order.totalAmount || 0),
+    0
+  );
+  const stats = [
+    {
+      title: "Total Medicines",
+      value: totalMedicines,
+      icon: Pill,
+      color: "bg-green-100 text-green-600",
+    },
+    {
+      title: "Total Orders",
+      value: totalOrders,
+      icon: ShoppingBag,
+      color: "bg-blue-100 text-blue-600",
+    },
+    {
+      title: "Total Revenue",
+      value: `₹${totalRevenue.toLocaleString("en-IN")}`,
+      icon: IndianRupee,
+      color: "bg-purple-100 text-purple-600",
+    },
+    {
+      title: "Low Stock Items",
+      value: lowStockItems,
+      icon: AlertTriangle,
+      color: "bg-orange-100 text-orange-600",
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => {

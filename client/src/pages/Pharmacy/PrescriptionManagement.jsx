@@ -20,7 +20,7 @@ import {
   getAllPharmacyPrescriptions,
   approvePrescription,
   rejectPrescription,
-} from "../../redux/slices/PrescriptionSlice";
+} from "../../redux/slices/prescriptionSlice";
 
 const PrescriptionManagement = () => {
   const dispatch = useDispatch();

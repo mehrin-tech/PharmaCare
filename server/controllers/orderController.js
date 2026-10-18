@@ -569,6 +569,9 @@ export const updateOrderStatus=async(req,res)=>{
 
          if(status==='delivered'){
             order.deliveredAt=new Date()
+            
+
+           
          }
 
             await order.save()
@@ -662,6 +665,102 @@ Delivery Time: ${time}
 
     }
 }
+
+
+export const confirmCashReceived = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.user.userId;
+
+    // 1. Find the order
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // 2. Verify pharmacy
+    const pharmacy = await Pharmacy.findOne({
+      user: userId,
+    });
+
+    if (!pharmacy) {
+      return res.status(404).json({
+        success: false,
+        message: "Pharmacy profile not found",
+      });
+    }
+
+    if (
+      pharmacy.approvalStatus !== "approved" ||
+      !pharmacy.isActive
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Pharmacy is not approved or active",
+      });
+    }
+
+    // 3. Verify this pharmacy owns an item in the order
+    const pharmacyOwnsOrder = await Medicine.exists({
+      _id: {
+        $in: order.items.map((item) => item.medicine),
+      },
+      pharmacy: pharmacy._id,
+    });
+
+    if (!pharmacyOwnsOrder) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not have permission to confirm this payment",
+      });
+    }
+
+    // 4. COD orders only
+    if (order.paymentMethod !== "cod") {
+      return res.status(400).json({
+        success: false,
+        message: "Cash confirmation is only available for COD orders",
+      });
+    }
+
+    // 5. Order must already be delivered
+    if (order.orderStatus !== "delivered") {
+      return res.status(400).json({
+        success: false,
+        message: "Only delivered orders can be marked as paid",
+      });
+    }
+
+    // 6. Prevent duplicate confirmation
+    if (order.paymentStatus === "paid") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment has already been confirmed",
+      });
+    }
+
+    // 7. Confirm cash received
+    order.paymentStatus = "paid";
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "COD cash payment confirmed successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Confirm cash received error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to confirm cash payment",
+    });
+  }
+};
 
 export const trackOrder=async(req,res)=>{
     try{
