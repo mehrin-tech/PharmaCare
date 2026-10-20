@@ -26,6 +26,10 @@ import PrescriptionManagement from "../pages/Pharmacy/PrescriptionManagement";
 import OrderManagement from "../pages/Pharmacy/OrderManagement";
 import SalesReport from "../pages/Pharmacy/SalesReport";
 import PharmacyDashbaord from "../pages/Pharmacy/PharmacyDashbaord";
+
+//import AdminLayout from "../layouts/AdminLayout";
+import UserManagement from "../pages/Admin/UserManagement";
+import PharmacyManagement from "../pages/Admin/PharmacyManagement";
 function AppRoutes(){
     return(
         <Routes>
@@ -73,6 +77,10 @@ function AppRoutes(){
 <Route  path="sales&reports" element={<SalesReport/>}/>
 <Route  path="dashboard" element={<PharmacyDashbaord/>}/>
 </Route>
+
+
+  <Route path="/admin/customers" element={<UserManagement />} />
+  <Route path="/admin/pharma" element={<PharmacyManagement />} />
 
 
 

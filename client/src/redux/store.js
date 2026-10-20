@@ -14,6 +14,7 @@ import medicineReducer from "./slices/medicineSlice";
 import inventoryReducer from "./slices/inventorySlice";
 import profileReducer from "./slices/ProfileSlice";
 import salesReportReducer from "./slices/salesReportSlice";
+import adminUserReducer from "./slices/adminUserSlice";
 
 
 export const store=configureStore({
@@ -33,5 +34,6 @@ export const store=configureStore({
         inventory: inventoryReducer,
         profile: profileReducer,
         salesReport: salesReportReducer,
+        adminUsers: adminUserReducer,
     }
 })

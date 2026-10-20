@@ -152,7 +152,7 @@ export const rejectPharmacy=async(req,res)=>{
 export const getAllPharmacies = async (req, res) => {
     try {
         const pharmacies = await Pharmacy.find()
-            .populate('user', 'name email phone role')
+            .populate('user', 'name email phone role isActive')
             .sort({ createdAt: -1 })
 
         return res.status(200).json({
