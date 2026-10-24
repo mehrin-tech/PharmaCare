@@ -15,7 +15,7 @@ const PharmacyLayout = () => {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div className="md:ml-[230px]">
+      <div className="min-w-0 lg:ml-[230px]">
         <TopNavbar setSidebarOpen={setSidebarOpen} />
 
         <main className="p-4 md:p-6">

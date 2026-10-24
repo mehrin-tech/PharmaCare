@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React,{useState} from "react";
 
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import TopNavbar from "../../components/customer/TopNavbar";
@@ -10,12 +10,13 @@ import RecentRegisteredUsers from "../../components/admin/Dashboard/RecentRegist
 import RecentRegisteredPharmacies from "../../components/admin/Dashboard/RecentRegisteredPharmacies";
 
 const AdminDashboard = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className="min-h-screen bg-[#F7F9FA] md:flex">
-      <AdminSidebar />
+    <div className="min-h-screen bg-[#F7F9FA] lg:flex">
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="min-w-0 flex-1">
-        <TopNavbar />
+        <TopNavbar setSidebarOpen={setSidebarOpen} />
 
         <div className="mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
           {/* Dashboard Stats */}

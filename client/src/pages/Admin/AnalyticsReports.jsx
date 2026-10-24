@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   TrendingUp,
 
@@ -8,11 +8,12 @@ import TopNavbar from '../../components/customer/TopNavbar'
 import RevenueChart from '../../components/admin/Revenue/RevenueChart'
 import CustomerGrowth from '../../components/admin/Analytics&Reports/CustomerGrowth';
 const AnalyticsReports = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div className="min-h-screen bg-[#F7F9FC] md:flex">
-      <AdminSidebar/>
+    <div className="min-h-screen bg-[#F7F9FC] lg:flex">
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="min-w-0 flex-1">
-          <TopNavbar/>
+          <TopNavbar setSidebarOpen={setSidebarOpen} />
           <div className="mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
           {/* Page Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

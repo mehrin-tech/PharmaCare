@@ -394,9 +394,8 @@ export default function TopNavbar({ setSidebarOpen }) {
           <Menu size={20} strokeWidth={1.8} />
         </button>
 
-        {/* Search */}
-
-        <div className="relative min-w-0">
+        {/* Search is available in the customer navbar only. */}
+        {isCustomer && <div className="relative min-w-0">
           <form
             onSubmit={handleSearch}
             className="flex h-[32px] w-full max-w-[320px]
@@ -457,7 +456,7 @@ export default function TopNavbar({ setSidebarOpen }) {
                 ))}
               </div>
             )}
-        </div>
+        </div>}
       </div>
 
       {/* RIGHT: ROLE-SPECIFIC ACTIONS */}

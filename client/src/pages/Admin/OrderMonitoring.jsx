@@ -16,17 +16,18 @@ const OrderMonitoring = () => {
 } = useSelector((state) => state.adminOrder || {});
 
 const [selectedOrder, setSelectedOrder] = useState(null);
+const [sidebarOpen, setSidebarOpen] = useState(false);
     useEffect(()=>{
         dispatch(getAllAdminOrders())
         dispatch(getAdminOrderStatistics())
 
     },[dispatch])
   return (
-    <div className="min-h-screen bg-[#F7F9FA] md:flex">
-        <AdminSidebar/>
+    <div className="min-h-screen bg-[#F7F9FA] lg:flex">
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="flex-1 min-w-0">
 
-             <TopNavbar/>
+             <TopNavbar setSidebarOpen={setSidebarOpen} />
               <OrderStats/>
               <OrderTable
                orders={orders}

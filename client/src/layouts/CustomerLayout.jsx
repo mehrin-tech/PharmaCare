@@ -1,6 +1,6 @@
 import { useState } from "react";
-import TopNavbar from "../components/common/TopNavbar";
-import CustomerSidebar from "../components/customer/CustomerSidebar";
+import TopNavbar from "../components/customer/TopNavbar";
+import CustomerSidebar from "../components/customer/Sidebar";
 
 const CustomerLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -8,8 +8,8 @@ const CustomerLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <CustomerSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
       />
 
       <div className="md:ml-[230px]">

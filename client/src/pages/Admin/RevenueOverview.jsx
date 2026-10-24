@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   TrendingUp,
@@ -16,6 +16,7 @@ import { getRevenueReport } from "../../redux/slices/adminRevenueSlice";
 
 const RevenueOverview = () => {
   const dispatch = useDispatch();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     dispatch(getRevenueReport("Monthly"));
@@ -26,13 +27,13 @@ const RevenueOverview = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] md:flex">
+    <div className="min-h-screen bg-[#F7F9FC] lg:flex">
       {/* Sidebar */}
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
       <main className="min-w-0 flex-1">
-        <TopNavbar />
+        <TopNavbar setSidebarOpen={setSidebarOpen} />
 
         <div className="mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
           {/* Page Header */}
