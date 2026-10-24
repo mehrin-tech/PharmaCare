@@ -1,374 +1,4 @@
 
-// import { useState } from "react";
-// import { useNavigate, Link } from "react-router-dom";
-// import { UploadCloud, Eye, EyeOff, CheckCircle } from "lucide-react";
-// import api from "../../services/api";
-// import pharmacyImg from '../../assets/Pharmacare icon.png'
-// const PharmacyRegistration = () => {
-//   const navigate = useNavigate();
-
-//   const [form, setForm] = useState({
-//     pharmacyName: "",
-//     ownerName: "",
-//     email: "",
-//     password: "",
-//     phone: "",
-//     pharmacyType: "local",
-//     licenseNumber: "",
-//     address: "",
-//   });
-
-//   const [licenseFile, setLicenseFile] = useState(null);
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [pharmacyId, setPharmacyId] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [message, setMessage] = useState("");
-//   const [error, setError] = useState("");
-//   const [registrationComplete, setRegistrationComplete] =
-//     useState(false);
-
-//   const handleChange = (e) => {
-//     setForm((prev) => ({
-//       ...prev,
-//       [e.target.name]: e.target.value,
-//     }));
-//   };
-
-//   const handleFileChange = (e) => {
-//     const file = e.target.files?.[0];
-
-//     if (!file) return;
-
-//     const allowedTypes = [
-//       "application/pdf",
-//       "image/jpeg",
-//       "image/png",
-//     ];
-
-//     if (!allowedTypes.includes(file.type)) {
-//       setError("Please select a PDF, JPG, or PNG file.");
-//       e.target.value = "";
-//       return;
-//     }
-
-//     if (file.size > 5 * 1024 * 1024) {
-//       setError("License file must be smaller than 5 MB.");
-//       e.target.value = "";
-//       return;
-//     }
-
-//     setError("");
-//     setLicenseFile(file);
-//   };
-
-//   const uploadLicense = async (id, file) => {
-//     const data = new FormData();
-
-//     // Must match the field name configured in multer.
-//     data.append("license", file);
-
-//     const response = await api.post(
-//       `/pharmacy/${id}/license`,
-//       data
-//     );
-
-//     return response.data;
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError("");
-//     setMessage("");
-
-//     if (!licenseFile && !pharmacyId) {
-//       setError("Please select your pharmacy license document.");
-//       return;
-//     }
-
-//     setLoading(true);
-
-//     try {
-//       let id = pharmacyId;
-
-//       // Register only once. If license upload failed previously,
-//       // retry the upload without creating another account.
-//       if (!id) {
-//         const registrationData = {
-//           pharmacyName: form.pharmacyName.trim(),
-//           ownerName: form.ownerName.trim(),
-//           email: form.email.trim(),
-//           password: form.password,
-//           phone: form.phone.trim(),
-//           pharmacyType: form.pharmacyType,
-//           licenseNumber: form.licenseNumber.trim(),
-//         };
-
-//         if (form.address.trim()) {
-//           registrationData.address = {
-//             street: form.address.trim(),
-//           };
-//         }
-
-//         const registerResponse = await api.post(
-//           "/pharmacy/register",
-//           registrationData
-//         );
-
-//         id = registerResponse.data.pharmacy.id;
-
-//         setPharmacyId(id);
-//         setRegistrationComplete(true);
-//       }
-
-//       // Upload license after registration succeeds.
-//       if (licenseFile) {
-//         const result = await uploadLicense(id, licenseFile);
-
-//         setMessage(
-//           result.message ||
-//             "License uploaded successfully. Waiting for admin review."
-//         );
-
-//         navigate("/pharmacy/registration-status", {
-//           state: {
-//             pharmacyId: id,
-//             message: result.message,
-//             licenseVerification:
-//               result.pharmacy?.licenseVerification,
-//             approvalStatus:
-//               result.pharmacy?.approvalStatus,
-//           },
-//         });
-//       } else {
-//         setMessage(
-//           "Your account is registered. Please select your license and retry the upload."
-//         );
-//       }
-//     } catch (err) {
-//       console.error(
-//         "Pharmacy registration error:",
-//         err.response?.data || err
-//       );
-
-//       setError(
-//         err.response?.data?.message ||
-//           "Something went wrong. Please try again."
-//       );
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const inputClass =
-//     "w-full rounded-md border border-gray-200 bg-white px-3 py-2.5 text-xs outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-100";
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-//       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-2xl bg-white shadow-lg md:grid-cols-2">
-
-//         {/* Left panel: replace with your existing Figma image */}
-//         <div className="hidden bg-emerald-50 p-8 md:flex md:flex-col md:justify-center">
-//           <div className="mb-8 flex items-center gap-2 font-bold text-emerald-800">
-//             <CheckCircle size={20} />
-//             PharmaCare
-//           </div>
-
-//           <h2 className="text-2xl font-bold text-gray-800">
-//             Join PharmaCare
-//           </h2>
-
-//           <p className="mt-2 text-sm text-gray-500">
-//             Register your pharmacy and connect with customers.
-//           </p>
-
-//           <div className="mt-8 rounded-xl bg-white p-5 text-sm text-gray-600">
-//             Upload your valid pharmacy license to begin verification.
-//           </div>
-//         </div>
-
-//         {/* Registration form */}
-//         <div className="p-6 md:p-8">
-//           <h1 className="text-xl font-bold text-gray-900">
-//             Create your account
-//           </h1>
-
-//           <p className="mt-1 text-xs text-gray-500">
-//             Register your pharmacy to get started.
-//           </p>
-
-//           {registrationComplete && pharmacyId && (
-//             <div className="mt-4 rounded-lg bg-amber-50 p-3 text-xs text-amber-800">
-//               Account created. Complete the license upload below.
-//               Your pharmacy ID is saved for this session.
-//             </div>
-//           )}
-
-//           {error && (
-//             <div className="mt-4 rounded-lg bg-red-50 p-3 text-xs text-red-700">
-//               {error}
-//             </div>
-//           )}
-
-//           {message && (
-//             <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-700">
-//               {message}
-//             </div>
-//           )}
-
-//           <form onSubmit={handleSubmit} className="mt-5 space-y-3">
-//             <input
-//               name="pharmacyName"
-//               value={form.pharmacyName}
-//               onChange={handleChange}
-//               placeholder="Pharmacy name"
-//               required
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             />
-
-//             <input
-//               name="ownerName"
-//               value={form.ownerName}
-//               onChange={handleChange}
-//               placeholder="Pharmacy owner name"
-//               required
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             />
-
-//             <input
-//               type="email"
-//               name="email"
-//               value={form.email}
-//               onChange={handleChange}
-//               placeholder="Email address"
-//               required
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             />
-
-//             <div className="relative">
-//               <input
-//                 type={showPassword ? "text" : "password"}
-//                 name="password"
-//                 value={form.password}
-//                 onChange={handleChange}
-//                 placeholder="Password"
-//                 required
-//                 disabled={!!pharmacyId}
-//                 className={`${inputClass} pr-10`}
-//               />
-
-//               <button
-//                 type="button"
-//                 onClick={() => setShowPassword((prev) => !prev)}
-//                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-//                 aria-label="Toggle password visibility"
-//               >
-//                 {showPassword ? (
-//                   <EyeOff size={16} />
-//                 ) : (
-//                   <Eye size={16} />
-//                 )}
-//               </button>
-//             </div>
-
-//             <input
-//               type="tel"
-//               name="phone"
-//               value={form.phone}
-//               onChange={handleChange}
-//               placeholder="Phone number"
-//               required
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             />
-
-//             <select
-//               name="pharmacyType"
-//               value={form.pharmacyType}
-//               onChange={handleChange}
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             >
-//               <option value="local">Local Pharmacy</option>
-//               <option value="hospital">Hospital Pharmacy</option>
-//             </select>
-
-//             <input
-//               name="licenseNumber"
-//               value={form.licenseNumber}
-//               onChange={handleChange}
-//               placeholder="Pharmacy license number"
-//               required
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             />
-
-//             <input
-//               name="address"
-//               value={form.address}
-//               onChange={handleChange}
-//               placeholder="Pharmacy address"
-//               disabled={!!pharmacyId}
-//               className={inputClass}
-//             />
-
-//             {/* License upload */}
-//             <label className="block cursor-pointer rounded-lg border border-dashed border-emerald-300 bg-emerald-50/50 p-5 text-center hover:bg-emerald-50">
-//               <UploadCloud
-//                 size={25}
-//                 className="mx-auto text-emerald-600"
-//               />
-
-//               <p className="mt-2 text-xs font-semibold text-gray-700">
-//                 {licenseFile
-//                   ? licenseFile.name
-//                   : "Upload your pharmacy license"}
-//               </p>
-
-//               <p className="mt-1 text-[10px] text-gray-500">
-//                 PDF, JPG or PNG · Maximum 5 MB
-//               </p>
-
-//               <input
-//                 type="file"
-//                 accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-//                 onChange={handleFileChange}
-//                 className="hidden"
-//               />
-//             </label>
-
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="w-full rounded-md bg-emerald-600 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-//             >
-//               {loading
-//                 ? "Please wait..."
-//                 : pharmacyId
-//                   ? "Retry License Upload"
-//                   : "Create Pharmacy Account"}
-//             </button>
-//           </form>
-
-//           <p className="mt-4 text-center text-xs text-gray-500">
-//             Already have an account?{" "}
-//             <Link
-//               to="/login"
-//               className="font-semibold text-emerald-700"
-//             >
-//               Login
-//             </Link>
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PharmacyRegistration;
-
 
 import { useState } from "react";
 import logo from '../../assets/logo.png'
@@ -514,24 +144,43 @@ const PharmacyRegistration = () => {
         `/pharmacy/${id}/license`,
         licenseData
       );
+        const uploadedPharmacy = licenseResponse.data?.pharmacy;
 
-      navigate("/pharmacy/registration-status", {
-        state: {
-          pharmacyId: id,
-          message: licenseResponse.data.message,
-          pharmacy: licenseResponse.data.pharmacy,
+  navigate("/pharmacy/registration-status", {
+    state: {
+      pharmacyId:
+        uploadedPharmacy?._id ||
+        uploadedPharmacy?.id ||
+        id,
+      message: licenseResponse.data.message,
+      pharmacy: uploadedPharmacy || {
+        _id: id,
+        approvalStatus: "pending",
+        licenseVerification: {
+          status: "verified",
         },
-      });
-    } catch (err) {
-      console.error(
-        "Registration error:",
-        err.response?.data || err
-      );
+      },
+    },
+  });
 
-      setError(
-        err.response?.data?.message ||
-          "Registration failed. Please try again."
-      );
+      // navigate("/pharmacy/registration-status", {
+      //   state: {
+      //     pharmacyId: pharmacy._id,
+      //     message: licenseResponse.data.message,
+      //     pharmacy: licenseResponse.data.pharmacy,
+      //   },
+      // });
+    } catch (err) {
+      console.error("Registration error:", err.response?.data || err);
+  console.log("Status:", err.response?.status);
+  console.log("Backend response:", err.response?.data);
+
+  setError(
+    err.response?.data?.message ||
+      err.response?.data?.error ||
+      "Registration failed. Please try again."
+  );
+    
     } finally {
       setLoading(false);
     }

@@ -1,12 +1,14 @@
 import React from "react";
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
+import api from '../../services/api'
 import MedicineStats from "../../components/pharmacy/Medicines/MedicineStats";
 import MedicineToolbar from '../../components/pharmacy/Medicines/MedicineToolbar'
 import MedicineTable from '../../components/pharmacy/Medicines/MedicineTable'
 import { fetchMyMedicines, deleteMedicine } from "../../redux/slices/medicineSlice";
 import MedicineDetailsModal from '../../components/pharmacy/Medicines/MedicineDetailsModal'
 import EditMedicineModal from "../../components/pharmacy/Medicines/EditMedicineModal";
+import AddMedicineModal from "../../components/pharmacy/Medicines/AddMedicineModal";
 // import DeleteMedicineModal from
 //   "../../components/pharmacy/Medicines/DeleteMedicineModal";
 const Medicine = () => {
@@ -21,6 +23,8 @@ const Medicine = () => {
     const [selectedMedicine, setSelectedMedicine] = useState(null)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
     const [editingMedicine, setEditingMedicine] = useState(null)
+     const [showAddModal, setShowAddModal] = useState(false);
+  const [adding, setAdding] = useState(false);
 
 
     useEffect(() => {
@@ -30,10 +34,29 @@ const Medicine = () => {
     console.log("Medicine loading:", loading);
     console.log("Medicine error:", error);
 
+const handleAddMedicine = async (formData) => {
+  try {
+    setAdding(true);
 
-    const handleAddMedicine = () => {
-        console.log("Add Medicine clicked");
-    };
+    const response = await api.post("/medicines", formData);
+
+    console.log("Medicine added:", response.data);
+
+    setShowAddModal(false);
+
+    // Ivide medicine list refresh cheyyuka.
+    // Example: dispatch(getPharmacyMedicines());
+
+  } catch (error) {
+    console.error("Add medicine failed:", error);
+
+    throw new Error(
+      error.response?.data?.message || "Failed to add medicine"
+    );
+  } finally {
+    setAdding(false);
+  }
+};
 
     const handleViewMedicine = (medicine) => {
         setSelectedMedicine(medicine)
@@ -127,7 +150,7 @@ const Medicine = () => {
                 setStatus={setStatus}
                 stockStatus={stockStatus}
                 setStockStatus={setStockStatus} categories={categories}
-                onAddMedicine={handleAddMedicine}
+               onAddMedicine={() => setShowAddModal(true)}
             //   onImport={handleImport}
 
 
@@ -157,6 +180,12 @@ const Medicine = () => {
                 isOpen={Boolean(editingMedicine)}
                 onClose={handleCloseEdit}
             />
+              <AddMedicineModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={handleAddMedicine}
+        loading={adding}
+      />
             {/* <DeleteMedicineModal
   isOpen={Boolean(deletingMedicine)}
   medicine={deletingMedicine}

@@ -15,8 +15,9 @@ import inventoryReducer from "./slices/inventorySlice";
 import profileReducer from "./slices/ProfileSlice";
 import salesReportReducer from "./slices/salesReportSlice";
 import adminUserReducer from "./slices/adminUserSlice";
-
-
+import adminOrderReducer from './slices/adminOrderSlice'
+import adminRevenueReducer from './slices/adminRevenueSlice'
+import adminAnalyticsReducer from "./slices/adminAnalyticsSlice";
 export const store=configureStore({
     reducer:{
         auth:authReducer,
@@ -35,5 +36,8 @@ export const store=configureStore({
         profile: profileReducer,
         salesReport: salesReportReducer,
         adminUsers: adminUserReducer,
+        adminOrder:adminOrderReducer,
+        adminRevenue:adminRevenueReducer,
+        adminAnalytics: adminAnalyticsReducer,
     }
 })

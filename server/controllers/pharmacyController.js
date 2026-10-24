@@ -118,9 +118,12 @@ await user.save()
 }
 export const uploadLicense = async (req, res) => {
     try {
- console.log("🔥 UPLOAD LICENSE CONTROLLER HIT")
+ 
+            
         const { pharmacyId } = req.params
-            console.log("Pharmacy ID:", pharmacyId)
+        console.log("🔥 UPLOAD LICENSE CONTROLLER HIT")
+   console.log("Pharmacy ID:", pharmacyId)
+          
 
         // 1. Check file
         if (!req.file) {
@@ -771,3 +774,39 @@ export const updatePharmacy=async(req,res)=>{
 
     }
 }
+
+// Get pharmacy registration status
+export const getPharmacyRegistrationStatus = async (req, res) => {
+  try {
+    const { pharmacyId } = req.params;
+
+    const pharmacy = await Pharmacy.findById(pharmacyId).select(
+      "pharmacyName approvalStatus licenseVerification isActive"
+    );
+
+    if (!pharmacy) {
+      return res.status(404).json({
+        success: false,
+        message: "Pharmacy not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      pharmacy: {
+        _id: pharmacy._id,
+        pharmacyName: pharmacy.pharmacyName,
+        approvalStatus: pharmacy.approvalStatus,
+        licenseVerification: pharmacy.licenseVerification,
+        isActive: pharmacy.isActive,
+      },
+    });
+  } catch (error) {
+    console.error("Get pharmacy registration status error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch pharmacy registration status",
+    });
+  }
+};

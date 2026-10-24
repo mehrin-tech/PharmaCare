@@ -39,13 +39,13 @@ console.log("Customer count:", customers.length);
       icon: UserRound,
       iconStyle: "bg-blue-100 text-blue-600",
     },
-    {
-      title: "Pharmacies",
-      value: totalPharmacies,
-      description: "Pharmacy accounts",
-      icon: Store,
-      iconStyle: "bg-orange-100 text-orange-600",
-    },
+    // {
+    //   title: "Pharmacies",
+    //   value: totalPharmacies,
+    //   description: "Pharmacy accounts",
+    //   icon: Store,
+    //   iconStyle: "bg-orange-100 text-orange-600",
+    // },
     {
       title: "Admins",
       value: "1",

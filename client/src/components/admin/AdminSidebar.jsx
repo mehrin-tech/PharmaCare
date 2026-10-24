@@ -14,6 +14,7 @@ import {
   Wallet,
   X,
   LogOut,
+  ClipboardList
 } from "lucide-react";
 
 const menuItems = [
@@ -32,15 +33,11 @@ const menuItems = [
     path: "/admin/pharma",
     icon: Store,
   },
+ 
   {
-    name: "Product Management",
-    path: "/admin/products",
-    icon: Pill,
-  },
-  {
-    name: "Order Management",
+    name: "Order Monitor",
     path: "/admin/orders",
-    icon: ShoppingBag,
+    icon:ClipboardList,
   },
   {
     name: "Analytics & Reports",
@@ -126,9 +123,7 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-5">
-          <p className="mb-3 px-3 text-[9px] font-semibold uppercase tracking-wider text-[#91B6A9]">
-            Main Menu
-          </p>
+          
 
           <div className="space-y-1">
             {menuItems.map((item) => {
@@ -183,7 +178,10 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
 
           <button
             type="button"
-            onClick={onLogout}
+            onClick={()=>{
+              localStorage.removeItem('token')
+              window.location.href='/login'
+            }}
             className="
               w-full
               flex

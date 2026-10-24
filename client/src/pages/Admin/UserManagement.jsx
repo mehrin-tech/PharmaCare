@@ -13,7 +13,7 @@ import {
   fetchCustomers,
   updateCustomerStatus,
 } from "../../redux/slices/adminUserSlice";
-import { getAllPharmacies } from "../../redux/slices/pharmacySlice";
+//import { getAllPharmacies } from "../../redux/slices/pharmacySlice";
 
 const UserManagement = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     dispatch(fetchCustomers());
-    dispatch(getAllPharmacies())
+    
   }, [dispatch]);
 
   const handleToggleStatus = async (customer) => {

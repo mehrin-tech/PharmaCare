@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 
 import Sidebar from "../../components/customer/Sidebar";
 import TopNavbar from "../../components/customer/TopNavbar";
@@ -28,6 +28,8 @@ const Checkout = () => {
 
   const dispatch = useDispatch();
   const location = useLocation();
+
+  const [paidOrder, setPaidOrder] = useState(null);
 
   const buyNowItem = location.state?.buyNowItem;
 
@@ -59,98 +61,121 @@ console.log("Medicine price:", cartItems[0]?.medicine?.price);
   const { loading: paymentLoading } = useSelector((state) => state.payment)
 
 
-  const handleRazorpayPayment = async (createOrder) => {
-    try {
-      //create razzorpay order
-      const result = await dispatch(
-        createPayment({
-          orderId: createOrder._id,
-          paymentMethod: 'razorpay'
-        })
-      ).unwrap()
+  const handleRazorpayPayment = async (createdOrder) => {
+  try {
+    // 1. Load Razorpay checkout
+    const loaded = await loadRazorpayScript();
 
-      const { payment, razorpay } = result
-
-      //razorpay actions
-
-      const options = {
-        key: razorpay.keyId,
-        amount: razorpay.amount,
-        currency: razorpay.currency,
-        name: 'PharmaCare',
-        description: "Medicine Order",
-        order_id: razorpay.orderId,
-
-        handler: async function (response) {
-          try {
-            const verification = await dispatch(
-              paymentSuccess({
-                paymentId: payment._id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id:
-                  response.razorpay_payment_id,
-                razorpay_signature:
-                  response.razorpay_signature
-              })
-            ).unwrap()
-            console.log(
-              "PAYMENT VERIFIED:",
-              verification
-            );
-            // 4. Show success
-
-            setShowSuccessModal(true);
-
-          } catch (error) {
-            console.log(
-              "PAYMENT VERIFICATION ERROR:",
-              error
-            );
-            alert(error)
-
-
-          }
-        },
-        prefill: {
-
-          name: "",
-
-          email: "",
-
-          contact: ""
-
-        },
-
-
-        theme: {
-
-          color: "#0F9D74"
-
-        },
-
-
-        modal: {
-
-          ondismiss: function () {
-
-            console.log(
-              "Razorpay checkout closed"
-            );
-
-          }
-
-        }
-
-      };
-
-
-
-
-    } catch (error) {
-
+    if (!loaded) {
+      alert("Razorpay failed to load. Please try again.");
+      return;
     }
 
+    // 2. Create Razorpay order in backend
+    const result = await dispatch(
+      createPayment({
+        orderId: createdOrder._id,
+        paymentMethod: "razorpay",
+      })
+    ).unwrap();
+
+    const { payment, razorpay } = result;
+
+    // 3. Configure Razorpay checkout
+    const options = {
+      key: razorpay.keyId,
+      amount: razorpay.amount,
+      currency: razorpay.currency,
+
+      name: "PharmaCare",
+      description: "Medicine Order",
+
+      order_id: razorpay.orderId,
+
+      handler: async function (response) {
+        try {
+          // 4. Verify payment in backend
+          const verification = await dispatch(
+            paymentSuccess({
+              paymentId: payment._id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+          ).unwrap();
+
+          // 5. Show success only after verification
+          setPaidOrder(verification.order);
+
+        } catch (error) {
+          console.error("Payment verification error:", error);
+
+          alert(
+            typeof error === "string"
+              ? error
+              : error?.message || "Payment verification failed."
+          );
+        }
+      },
+
+      modal: {
+        ondismiss: function () {
+          console.log("Razorpay checkout closed.");
+        },
+      },
+
+      theme: {
+        color: "#0F9D74",
+      },
+    };
+
+    // 6. OPEN RAZORPAY CHECKOUT
+    const razorpayInstance = new window.Razorpay(options);
+
+    razorpayInstance.on("payment.failed", function (response) {
+      console.error("Razorpay payment failed:", response.error);
+
+      alert(
+        response.error?.description ||
+          "Payment failed. Please try again."
+      );
+    });
+
+    razorpayInstance.open();
+
+  } catch (error) {
+    console.error("Razorpay initiation error:", error);
+
+    alert(
+      typeof error === "string"
+        ? error
+        : error?.message || "Unable to start payment."
+    );
   }
+
+  }
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+
+    document.body.appendChild(script);
+  });
+};
+
+  
+
+  
   // PLACE ORDER
   const handlePlaceOrder = async () => {
 
@@ -173,44 +198,33 @@ console.log("Medicine price:", cartItems[0]?.medicine?.price);
     }
 
 
-    try {
+  
 
-      const result = await dispatch(
-        placeOrder({
-          pharmacyId: selectedPharmacy,
-          deliveryMethod: selectedDeliveryMethod,
-          paymentMethod: selectedPaymentMethod,
-        })
-      ).unwrap();
+   try {
+  const result = await dispatch(
+    placeOrder({
+      pharmacyId: selectedPharmacy,
+      deliveryMethod: selectedDeliveryMethod,
+      paymentMethod: selectedPaymentMethod,
+    })
+  ).unwrap();
 
-      console.log("ORDER RESPONSE:", result);
+  console.log("ORDER RESPONSE:", result);
 
+  // COD
+  if (selectedPaymentMethod === "cod") {
+    console.log("COD order created successfully");
+    return;
+  }
 
-      // COD
-      if (selectedPaymentMethod === "cod") {
+  // RAZORPAY
+  if (selectedPaymentMethod === "razorpay") {
+    await handleRazorpayPayment(result.order);
+  }
 
-        console.log("COD order created successfully");
-
-      }
-
-
-      // Razorpay
-      if (selectedPaymentMethod === "razorpay") {
-
-        console.log(
-          "Razorpay payment should start here"
-        );
-
-        // Razorpay integration
-        // next step
-
-      }
-
-    } catch (error) {
-
-      console.log("PLACE ORDER ERROR:", error);
-
-    }
+} catch (error) {
+  console.error("PLACE ORDER ERROR:", error);
+}
 
   };
 
@@ -283,7 +297,7 @@ console.log("Medicine price:", cartItems[0]?.medicine?.price);
 
 
               {/* PLACE ORDER */}
-              <button
+              {/* <button
                 type="button"
                 onClick={handlePlaceOrder}
                 disabled={loading}
@@ -294,7 +308,19 @@ console.log("Medicine price:", cartItems[0]?.medicine?.price);
                   ? "Placing Order..."
                   : "Place Order"}
 
-              </button>
+              </button> */}
+              <button
+  type="button"
+  onClick={handlePlaceOrder}
+  disabled={loading || paymentLoading}
+  className="w-full rounded-lg bg-[#0F9D74] py-3 text-sm font-semibold text-white transition hover:bg-[#0c8c68] disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {loading || paymentLoading
+    ? "Processing..."
+    : selectedPaymentMethod === "razorpay"
+      ? "Pay Now"
+      : "Place Order"}
+</button>
 
 
               <p className="text-center text-[10px] text-gray-400">
@@ -330,12 +356,28 @@ console.log("Medicine price:", cartItems[0]?.medicine?.price);
 
 
         {/* SUCCESS MODAL */}
-        {success && order && (
+        {/* {success && order && (
           <OrderSuccessModal
             order={order}
             paymentMethod={selectedPaymentMethod}
           />
-        )}
+        )} */}
+
+        {/* COD SUCCESS */}
+{selectedPaymentMethod === "cod" && success && order && (
+  <OrderSuccessModal
+    order={order}
+    paymentMethod="cod"
+  />
+)}
+
+{/* RAZORPAY SUCCESS */}
+{paidOrder && (
+  <OrderSuccessModal
+    order={paidOrder}
+    paymentMethod="razorpay"
+  />
+)}
 
       </div>
 

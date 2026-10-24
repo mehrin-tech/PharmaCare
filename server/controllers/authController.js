@@ -100,6 +100,29 @@ console.log("Stored hash:", user.password);
                 message:"Invalid email or password",
             })
         }
+
+        if(user.role === 'pharmacy'){
+            const pharmacy=await Pharmacy.findOne({
+                user:user._id,
+            })
+            if(!pharmacy){
+                return res.status(403).json({
+                    success:false,
+                    message:'pharmacy account not found'
+                })
+            }
+
+            if (pharmacy.approvalStatus !== "approved") {
+    return res.status(403).json({
+        success: false,
+        message:
+            pharmacy.approvalStatus === "rejected"
+                ? "Your pharmacy registration has been rejected."
+                : "Your pharmacy registration is awaiting admin approval.",
+        approvalStatus: pharmacy.approvalStatus,
+    });
+}
+        }
         //4 create JWT
         const token= jwt.sign({
             userId:user._id,

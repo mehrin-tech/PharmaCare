@@ -57,7 +57,7 @@ const SalesOverview = ({
   );
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className=" h-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">

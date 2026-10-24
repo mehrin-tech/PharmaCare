@@ -1,71 +1,3 @@
-// import React from 'react'
-
-// import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import AdminSidebar from "../../components/admin/AdminSidebar";
-// import TopNavbar from "../../components/customer/TopNavbar";
-// import PharmacyStats from '../../components/admin/PharmacyManagement/PharmacyStats';
-// import { getAllPharmacies } from '../../redux/slices/pharmacySlice';
-// import PharmacyTabs from '../../components/admin/PharmacyManagement/PharmacyTabs';
-// import PharmacyTable from '../../components/admin/PharmacyManagement/PharmacyTable';
-// const PharmacyManagement = () => {
-//     const dispatch=useDispatch()
-//       const [sidebarOpen, setSidebarOpen] = useState(false);
-//       const [approvalStatus, setApprovalStatus] = useState("all");
-
-//       const { allPharmacies = [], allPharmaciesLoading, allPharmaciesError } =
-//   useSelector((state) => state.pharmacy || {});
-//       useEffect(()=>{
-//         dispatch(getAllPharmacies())
-//       })
-//   return (
-//     <div className="min-h-screen bg-[#F7F8FA]">
-//       <AdminSidebar  isOpen={sidebarOpen}
-//         onClose={() => setSidebarOpen(false)} />
-//         <div className="h-screen lg:ml-[230px]">
-//             <header className="sticky top-0 z-30 h-[70px] border-b border-gray-200 bg-white">
-//             <TopNavbar setSidebarOpen={setSidebarOpen} />
-
-//             </header>
-//             <main  className="space-y-6 p-4 md:p-6">
-//                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-//                     <div>
-//                           <div className="flex items-center gap-2">
-                
-
-//                 <h1 className="text-2xl font-bold text-slate-800">
-//                   Pharmacy Management
-//                 </h1>
-//               </div>
-
-//               <p className="mt-2 text-sm text-gray-500">
-//                 Manage and monitor registered customer accounts.
-//               </p>
-//                     </div>
-
-//                 </div>
-//                 <PharmacyStats/>
-//                 <PharmacyTabs activeTab={approvalStatus}
-//   onTabChange={setApprovalStatus}/>
-//   <PharmacyTable  pharmacies={allPharmacies}
-//   loading={allPharmaciesLoading}
-//   error={allPharmaciesError}
-//   search={search}
-//   approvalStatus={approvalStatus}
-//   businessType={businessType}
-//   accountStatus={accountStatus}
-//   onView={(pharmacy) => setSelectedPharmacy(pharmacy)}/>
-//             </main>
-//         </div>
-        
-     
-//     </div>
-//   )
-// }
-
-// export default PharmacyManagement
-
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -77,7 +9,7 @@ import PharmacyTabs from "../../components/admin/PharmacyManagement/PharmacyTabs
 import PharmacyTable from "../../components/admin/PharmacyManagement/PharmacyTable";
 import PharmacyDetailsModal from
   "../../components/admin/PharmacyManagement/PharmacyDetailsModal";
-import { getAllPharmacies } from "../../redux/slices/pharmacySlice";
+import { getAllPharmacies,rejectPharmacy,approvePharmacy } from "../../redux/slices/pharmacySlice";
 
 const PharmacyManagement = () => {
   const dispatch = useDispatch();
@@ -104,14 +36,50 @@ const PharmacyManagement = () => {
   useEffect(() => {
     dispatch(getAllPharmacies());
   }, [dispatch]);
+  
+  const handleReject=async(pharmacy,reason)=>{
+    try{
+      await dispatch(rejectPharmacy({
+        pharmacyId:pharmacy._id,
+        reason
+      })).unwrap()
+      setSelectedPharmacy(null)
+      dispatch(getAllPharmacies())
 
+    }catch(error){
+
+      console.error("Reject pharmacy failed:", error);
+    alert(typeof error === "string" ? error : "Failed to reject pharmacy");
+
+    }
+  }
+
+  const handleApprove=async(pharmacy)=>{
+    try{
+      await dispatch(approvePharmacy(pharmacy._id)).unwrap()
+      setSelectedPharmacy(null);
+
+    await dispatch(getAllPharmacies()).unwrap();
+    alert("Pharmacy approved successfully!");
+
+    }catch(error){
+       console.error("Approve pharmacy failed:", error);
+    alert(
+      typeof error === "string"
+        ? error
+        : "Failed to approve pharmacy"
+    );
+
+    }
+  }
   return (
-    <div className="min-h-screen bg-[#F7F8FA]">
+    <div className="min-h-screen bg-[#F7F8FA] ">
       {/* Sidebar */}
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
+      
 
       {/* Main Content */}
       <div className="min-h-screen lg:ml-[230px]">
@@ -192,6 +160,8 @@ onView={setSelectedPharmacy}            />
 <PharmacyDetailsModal
   pharmacy={selectedPharmacy}
   onClose={() => setSelectedPharmacy(null)}
+   onReject={handleReject}
+   onApprove={handleApprove}
 />
          
         </main>

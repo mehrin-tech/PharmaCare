@@ -39,7 +39,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const menuItems = [
     {
       name: "Dashboard",
-      path: "/home",
+      path: "/dashboard",
       icon: House,
     },
     {

@@ -28,8 +28,13 @@ import SalesReport from "../pages/Pharmacy/SalesReport";
 import PharmacyDashbaord from "../pages/Pharmacy/PharmacyDashbaord";
 
 //import AdminLayout from "../layouts/AdminLayout";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
 import UserManagement from "../pages/Admin/UserManagement";
 import PharmacyManagement from "../pages/Admin/PharmacyManagement";
+import OrderMonitoring from '../pages/Admin/OrderMonitoring'
+import RevenueOverview from '../pages/Admin/RevenueOverview'
+import AnalyticsReports from "../pages/Admin/AnalyticsReports";
+import PharmacyRegistrationStatus from '../pages/Pharmacy/PharmacyRegistrationStatus';
 function AppRoutes(){
     return(
         <Routes>
@@ -38,7 +43,7 @@ function AppRoutes(){
             <Route path='/login' element={<Login/>} />
             <Route path="/forgot-password" element={<ForgotPassword/>} />
             <Route path="/reset-password/:token" element={<ResetPassword />}/>
-            <Route path="/home" element={<CustomerDashboard />} />
+            <Route path="/dashboard" element={<CustomerDashboard />} />
             <Route path="/medicines" element={<Medicines />} />
             <Route path="/medicines/:medicineId" element={<MedicineDetails />} />
             <Route path="/pharmacies" element={<Pharmacies/>}/>
@@ -66,7 +71,11 @@ function AppRoutes(){
   path="/prescription"
   element={<Prescription />}
 />
-<Route path='/pharmacy' element={<PharmacyRegistration/>}/>
+<Route path='/pharmacy/register' element={<PharmacyRegistration/>}/>
+<Route
+  path="/pharmacy/registration-status"
+  element={<PharmacyRegistrationStatus />}
+/>
 <Route  path='/pharmacy' element={<PharmacyLayout /> }>
 
 <Route  path='medicines' element={<Medicine />}/>
@@ -79,8 +88,12 @@ function AppRoutes(){
 </Route>
 
 
+<Route path="/admin/dashboard" element={<AdminDashboard/>} />
   <Route path="/admin/customers" element={<UserManagement />} />
   <Route path="/admin/pharma" element={<PharmacyManagement />} />
+  <Route path="/admin/orders" element={<OrderMonitoring/>} />
+  <Route  path="/admin/revenue" element={<RevenueOverview/>}/>
+  <Route path="/admin/analytics" element={<AnalyticsReports/>} />
 
 
 

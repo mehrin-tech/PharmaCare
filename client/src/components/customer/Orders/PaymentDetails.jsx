@@ -2,6 +2,7 @@ import React from "react";
 import { CreditCard } from "lucide-react";
 
 const PaymentDetails = ({
+  paymentMethod,
   paymentStatus,
   deliveryMethod,
 }) => {
@@ -12,6 +13,8 @@ const PaymentDetails = ({
       ? "Failed"
       : "Pending";
 
+
+      const method=paymentMethod==='razorpay' ? 'Online Payment (Razorpay)': paymentMethod==='cod'?"Cash on Delivery" : '-'
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-4">
 
@@ -34,7 +37,7 @@ const PaymentDetails = ({
         </p>
 
         <p className="mt-1 text-[10px] font-medium text-gray-700">
-          UPI / PhonePe
+         {method}
         </p>
       </div>
 

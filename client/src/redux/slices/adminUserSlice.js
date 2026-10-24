@@ -70,6 +70,8 @@ export const updateCustomerStatus = createAsyncThunk(
   }
 );
 
+
+
 const initialState = {
   customers: [],
   selectedCustomer: null,

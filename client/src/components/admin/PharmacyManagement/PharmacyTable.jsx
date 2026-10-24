@@ -1,6 +1,6 @@
-
+// CheckCircle,XCircle
 import React from "react";
-import { Eye, Building2, Mail, Phone } from "lucide-react";
+import { Eye, Building2, Mail, Phone,  } from "lucide-react";
 
 const PharmacyTable = ({
   pharmacies = [],
@@ -11,6 +11,7 @@ const PharmacyTable = ({
   businessType = "all",
   accountStatus = "all",
   onView,
+  onReject
 }) => {
   const filteredPharmacies = pharmacies.filter((pharmacy) => {
     const query = search.trim().toLowerCase();
@@ -85,10 +86,12 @@ const PharmacyTable = ({
               const approval = pharmacy.approvalStatus?.toLowerCase();
 
               return (
-                <tr
-                  key={pharmacy._id || index}
-                  className="transition hover:bg-gray-50"
-                >
+              <tr
+  key={pharmacy._id || index}
+  onClick={() => onView?.(pharmacy)}
+  title="Click to view pharmacy details"
+  className="cursor-pointer transition hover:bg-gray-50"
+>
                   {/* Pharmacy */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
@@ -176,17 +179,46 @@ const PharmacyTable = ({
                   </td>
 
                   {/* View Action */}
-                  <td className="px-5 py-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => onView?.(pharmacy)}
-                      title="View pharmacy details"
-                      className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
-                    >
-                      <Eye size={16} />
-                      View
-                    </button>
-                  </td>
+                {/* Actions */}
+<td className="px-5 py-4">
+  <div className="flex items-center justify-end gap-2">
+    {/* View Details */}
+    <button
+      type="button"
+      onClick={() => onView?.(pharmacy)}
+      title="View pharmacy details and license"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+    >
+      <Eye size={15} />
+      View
+    </button>
+
+    {/* Approve / Reject only for pending pharmacies */}
+    {/* {approval === "pending" && (
+      <>
+        <button
+          type="button"
+          onClick={() => onApprove?.(pharmacy)}
+          title="Approve pharmacy"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+        >
+          <CheckCircle size={15} />
+          Approve
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onReject?.(pharmacy)}
+          title="Reject pharmacy"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100"
+        >
+          <XCircle size={15} />
+          Reject
+        </button>
+      </>
+    )} */}
+  </div>
+</td>
                 </tr>
               );
             })

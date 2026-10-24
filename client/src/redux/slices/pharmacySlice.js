@@ -40,6 +40,48 @@ export const getAllPharmacies=createAsyncThunk(
   }
 )
 
+export const rejectPharmacy = createAsyncThunk(
+  "pharmacy/rejectPharmacy",
+  async ({ pharmacyId, reason }, { rejectWithValue }) => {
+    try {
+      const response = await api.patch(
+        `/admin/pharmacies/${pharmacyId}/reject`,
+        { reason }
+      );
+
+      return {
+        pharmacyId,
+        ...response.data,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+          "Failed to reject pharmacy"
+      );
+    }
+  }
+);
+export const approvePharmacy=createAsyncThunk(
+  'pharmacy/approvePharmacy',
+  async(pharmacyId,{rejectWithValue})=>{
+    try{
+      const response=await api.patch(`/admin/pharmacies/${pharmacyId}/approve`)
+      return{
+        pharmacyId,
+        ...response.data,
+      }
+
+    }catch(error){
+       return rejectWithValue(
+    error.response?.data?.message ||
+      "Failed to approve pharmacy"
+  );
+
+    }
+  }
+)
+
+
 const pharmacySlice=createSlice({
     name:'pharmacy',
     initialState:{
@@ -89,7 +131,41 @@ const pharmacySlice=createSlice({
   state.allPharmaciesLoading = false;
   state.allPharmaciesError =
     action.payload || "Failed to fetch all pharmacies";
-});
+}).addCase(rejectPharmacy.fulfilled, (state, action) => {
+  const pharmacyId = action.payload.pharmacyId;
+
+  state.allPharmacies = state.allPharmacies.map((pharmacy) =>
+    pharmacy._id === pharmacyId
+      ? {
+          ...pharmacy,
+          approvalStatus: "rejected",
+          isActive: false,
+        }
+      : pharmacy
+  );
+})
+.addCase(approvePharmacy.pending, (state) => {
+  state.error = null;
+})
+
+.addCase(approvePharmacy.fulfilled, (state, action) => {
+  const pharmacyId = action.payload.pharmacyId;
+
+  state.allPharmacies = state.allPharmacies.map((pharmacy) =>
+    pharmacy._id === pharmacyId
+      ? {
+          ...pharmacy,
+          approvalStatus: "approved",
+          isActive: true,
+        }
+      : pharmacy
+  );
+})
+
+.addCase(approvePharmacy.rejected, (state, action) => {
+  state.error =
+    action.payload || "Failed to approve pharmacy";
+})
     }
 })
 

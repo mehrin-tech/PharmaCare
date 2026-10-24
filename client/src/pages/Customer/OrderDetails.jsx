@@ -304,6 +304,7 @@ const OrderDetails = () => {
             {/* PAYMENT */}
 
             <PaymentDetails
+            paymentMethod={order.paymentMethod}
               paymentStatus={order.paymentStatus}
               deliveryMethod={order.deliveryMethod}
             />
