@@ -104,7 +104,7 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
 
               <div>
                 <h1 className="text-[16px] font-bold text-white">
-                  Pharma<span className="text-[#56D6AE]">Care</span>
+                  Pharma<span className="text-[#0F9D74]">Care</span>
                 </h1>
                 <p className="text-[9px] text-[#C5DDD5]">
                   Admin Panel

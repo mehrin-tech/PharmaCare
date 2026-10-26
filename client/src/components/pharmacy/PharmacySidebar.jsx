@@ -88,7 +88,7 @@ const PharmacySidebar = ({ isOpen = true, onClose }) => {
 
             <div>
               <h1 className="text-[17px] font-bold tracking-tight text-white">
-                PharmaCare
+                Pharma<span className="text-[#0F9D74]">Care</span>
               </h1>
               <p className="text-[9px] text-[#B5D1C7]">
                 Your Health, Your Priority
