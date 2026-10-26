@@ -100,12 +100,6 @@ const ProfileHeader = () => {
                         className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border"
                     />
 
-                    <button
-                        type="button"
-                        className="absolute bottom-0 right-0 bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-full transition"
-                    >
-                        <Camera size={14} />
-                    </button>
 
                 </div>
 

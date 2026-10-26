@@ -16,6 +16,7 @@ import {
   LogOut,
   ClipboardList
 } from "lucide-react";
+import logo from '../../assets/logo.png'
 
 const menuItems = [
   {
@@ -33,11 +34,11 @@ const menuItems = [
     path: "/admin/pharma",
     icon: Store,
   },
- 
+
   {
     name: "Order Monitor",
     path: "/admin/orders",
-    icon:ClipboardList,
+    icon: ClipboardList,
   },
   {
     name: "Analytics & Reports",
@@ -77,10 +78,9 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
           transform
           transition-transform
           duration-300
-          ${
-            isOpen
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
+          ${isOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
           }
         `}
       >
@@ -93,10 +93,13 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
               className="flex items-center gap-2"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#DFF6EE]">
-                <HeartPulse
-                  size={20}
-                  className="text-[#0F9D74]"
+
+                <img
+                  src={logo}
+                  alt="PharmaCare"
+                  className="w-[24px] h-[24px] object-contain"
                 />
+
               </div>
 
               <div>
@@ -123,7 +126,7 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-5">
-          
+
 
           <div className="space-y-1">
             {menuItems.map((item) => {
@@ -145,10 +148,9 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
                     text-[11px]
                     transition-colors
                     duration-200
-                    ${
-                      isActive
-                        ? "bg-[#0F9D74] text-white font-semibold shadow-sm"
-                        : "text-[#D1E5DE] hover:bg-[#205447] hover:text-white"
+                    ${isActive
+                      ? "bg-[#0F9D74] text-white font-semibold shadow-sm"
+                      : "text-[#D1E5DE] hover:bg-[#205447] hover:text-white"
                     }
                   `}
                 >
@@ -178,9 +180,9 @@ const AdminSidebar = ({ isOpen, onClose, onLogout }) => {
 
           <button
             type="button"
-            onClick={()=>{
+            onClick={() => {
               localStorage.removeItem('token')
-              window.location.href='/login'
+              window.location.href = '/login'
             }}
             className="
               w-full

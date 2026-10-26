@@ -35,10 +35,12 @@ import OrderMonitoring from '../pages/Admin/OrderMonitoring'
 import RevenueOverview from '../pages/Admin/RevenueOverview'
 import AnalyticsReports from "../pages/Admin/AnalyticsReports";
 import PharmacyRegistrationStatus from '../pages/Pharmacy/PharmacyRegistrationStatus';
+import LandingPage from "../pages/LandingPage/LandingPage";
+
 function AppRoutes(){
     return(
         <Routes>
-            <Route path="/" element={<h1>PharmaCare Home</h1>} />
+            <Route path="/" element={<LandingPage/>} />
             <Route path="/register" element={<CustomerRegister/>} />
             <Route path='/login' element={<Login/>} />
             <Route path="/forgot-password" element={<ForgotPassword/>} />
@@ -103,3 +105,4 @@ function AppRoutes(){
 }
 
 export default AppRoutes
+

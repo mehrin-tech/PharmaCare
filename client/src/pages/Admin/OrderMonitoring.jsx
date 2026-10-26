@@ -28,7 +28,30 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
         <main className="flex-1 min-w-0">
 
              <TopNavbar setSidebarOpen={setSidebarOpen} />
-              <OrderStats/>
+             <div className="px-4 pb-2 pt-6 sm:px-6 lg:px-8">
+  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <div className="flex items-center gap-2">
+      
+
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+          Order Monitoring
+        </h1>
+      </div>
+
+      <p className="mt-2 pl-3.5 text-sm text-gray-500 sm:text-base">
+        Monitor and manage all customer orders across PharmaCare.
+      </p>
+    </div>
+
+   
+  </div>
+</div>
+             
+               <section className="mb-8">
+            <OrderStats/>
+        </section>
+            
               <OrderTable
                orders={orders}
   loading={ordersLoading}

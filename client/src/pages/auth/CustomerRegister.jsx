@@ -3,6 +3,7 @@ import {Link,useNavigate} from 'react-router-dom'
 import bannerImage from '../../assets/bannerRegisterPharma.png'
 import logo from '../../assets/logo.png'
 import api from "../../services/api";
+import {User} from 'lucide-react'
 export function CustomerRegister(){
 
     const navigate=useNavigate()

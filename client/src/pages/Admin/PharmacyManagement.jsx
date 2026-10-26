@@ -73,35 +73,39 @@ const PharmacyManagement = () => {
     }
   }
   return (
-    <div className="min-h-screen bg-[#F7F8FA] ">
-      {/* Sidebar */}
-      <AdminSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-      
 
-      {/* Main Content */}
-      <div className="min-h-screen lg:ml-[230px]">
-        {/* Top Navbar */}
-        <header className="sticky top-0 z-30 h-[70px] border-b border-gray-200 bg-white">
-          <TopNavbar setSidebarOpen={setSidebarOpen} />
-        </header>
+  <div className="min-h-screen bg-[#F7F9FA] lg:flex">
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className="flex-1 min-w-0">
 
-        <main className="space-y-6 p-4 md:p-6">
-          {/* Page Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">
-              Pharmacy Management
-            </h1>
+             <TopNavbar setSidebarOpen={setSidebarOpen} />
+             <div className="px-4 pb-2 pt-6 sm:px-6 lg:px-8">
+  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <div className="flex items-center gap-2">
+       
 
-            <p className="mt-2 text-sm text-gray-500">
-              Manage, verify, and monitor registered pharmacies.
-            </p>
-          </div>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+          Pharmacy Management
+        </h1>
+      </div>
+
+     
+    </div>
+
+   
+  </div>
+</div>
+
+           
+
+        
 
           {/* Statistics */}
-          <PharmacyStats />
+         
+            <section className="mb-8">
+           <PharmacyStats />
+        </section>
 
           {/* Pharmacy Status Tabs */}
           <div className="rounded-xl border border-gray-100 bg-white px-5">
@@ -166,7 +170,7 @@ onView={setSelectedPharmacy}            />
          
         </main>
       </div>
-    </div>
+   
   );
 };
 

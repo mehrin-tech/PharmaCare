@@ -71,10 +71,11 @@ const [stockMedicine, setStockMedicine] = useState(null);
     return matchesSearch && matchesCategory && matchesStock;
   });
 
-//   const handleAddStock = () => {
-//     console.log("Add Stock clicked");
-//     // Next step: open AddStockModal
-//   };
+  // const handleAddStock = () => {
+  //   set
+  //   console.log("Add Stock clicked");
+  //   // Next step: open AddStockModal
+  // };
   const handleViewMedicine = (medicine) => {
   setSelectedMedicine(medicine);
   setIsDetailsOpen(true);
@@ -124,9 +125,7 @@ const handleConfirmDelete = async () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
-        <p className="mb-2 text-xs text-gray-500">
-          Home / Inventory
-        </p>
+       
 
         <h1 className="text-2xl font-bold text-gray-900">
           Inventory

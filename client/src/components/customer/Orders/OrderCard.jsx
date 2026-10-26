@@ -77,10 +77,43 @@ const OrderCard = ({ order }) => {
   // REORDER
   // =========================
 
-  const handleReorder = () => {
-    console.log("Reorder:", order._id);
-  };
+  // const handleReorder = () => {
+  //   console.log("Reorder:", order._id);
+  // };
 
+
+  const handleReorder = async () => {
+  try {
+    if (!order.items || order.items.length === 0) {
+      console.error("No items found in this order");
+      return;
+    }
+
+    for (const item of order.items) {
+      const medicineId =
+        item.medicine?._id ||
+        item.medicineId ||
+        item.medicine;
+
+      if (!medicineId) {
+        console.error("Medicine ID not found:", item);
+        continue;
+      }
+
+      // Add each medicine to cart
+      // Dispatch your cartSlice action here
+      // Example:
+      // await dispatch(addToCart({
+      //   medicineId,
+      //   quantity: item.quantity || 1,
+      // })).unwrap();
+    }
+
+    navigate("/cart");
+  } catch (error) {
+    console.error("Reorder error:", error);
+  }
+};
   // =========================
   // CANCEL
   // =========================

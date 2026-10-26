@@ -16,11 +16,17 @@ const AdminDashboard = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <main className="min-w-0 flex-1">
-        <TopNavbar setSidebarOpen={setSidebarOpen} />
+        <TopNavbar setSidebarOpen={setSidebarOpen}  />
 
         <div className="mx-auto max-w-[1600px] space-y-6 p-4 sm:p-6 lg:p-8">
           {/* Dashboard Stats */}
-       <h1>Dashboard</h1>
+        <div className="flex items-center gap-2">
+      
+
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+         Dashboard
+        </h1>
+      </div>
 
           {/* Revenue Chart + Order Sales Overview */}
           <section className="grid grid-cols-1 items-stretch gap-6 xl:grid-cols-2">

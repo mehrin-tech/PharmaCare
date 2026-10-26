@@ -90,9 +90,9 @@ const OrderTable = ({
   }, [orders, search, statusFilter]);
 
   return (
-    <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.04)]" >
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:p-5">
+      <div className="flex flex-col justify-between gap-4 border-b border-gray-100 bg-white p-5 sm:flex-row sm:items-center sm:p-6">
         <div>
           <h2 className="text-lg font-semibold text-slate-800">
             All Orders
@@ -145,7 +145,7 @@ const OrderTable = ({
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[950px] text-left text-sm">
+        <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
           <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
             <tr>
               <th className="px-5 py-4 font-semibold">Order ID</th>

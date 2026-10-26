@@ -4,6 +4,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AdminProfileModal from "../admin/AdminProfileModal";
 
 import {
   fetchNotifications,
@@ -31,6 +32,7 @@ export default function TopNavbar({ setSidebarOpen }) {
   const [suggestions, setSuggestions] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [location, setLocation] = useState(() => {
     try {
@@ -378,6 +380,7 @@ export default function TopNavbar({ setSidebarOpen }) {
   // -----------------------------------------
 
   return (
+    <>
     <header className="relative z-30 flex min-h-[54px] items-center
       justify-between gap-2 border-b border-gray-100 bg-white
       px-3 sm:px-5">
@@ -618,7 +621,7 @@ export default function TopNavbar({ setSidebarOpen }) {
         </div>
 
         {/* User profile */}
-
+{/* 
         <Link
           to={profilePath}
           className="flex items-center gap-2 rounded-lg
@@ -653,8 +656,56 @@ export default function TopNavbar({ setSidebarOpen }) {
               {user?.role || "Loading..."}
             </p>
           </div>
-        </Link>
+        </Link> */}
+
+       
+{/* User profile */}
+<button
+  type="button"
+  onClick={() => {
+    if (role === "admin") {
+      setIsProfileOpen(true);
+    } else {
+      navigate(profilePath);
+    }
+  }}
+  className="flex items-center gap-2 rounded-lg px-1 py-1 text-left transition hover:bg-gray-50 sm:px-2"
+>
+  <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8F8F2] sm:h-9 sm:w-9">
+    {user?.profilePhoto ? (
+      <img
+        src={user.profilePhoto}
+        alt="Profile"
+        className="h-full w-full object-cover"
+      />
+    ) : (
+      <UserRound
+        size={18}
+        className="text-[#0F9D74]"
+        strokeWidth={1.8}
+      />
+    )}
+  </div>
+
+  <div className="hidden text-left sm:block">
+    <p className="max-w-[120px] truncate text-[10px] font-semibold text-[#102A43]">
+      Hi, {user?.name || "User"}
+    </p>
+
+    <p className="text-[9px] capitalize text-gray-500">
+      {user?.role || "Loading..."}
+    </p>
+  </div>
+</button>
+
       </div>
     </header>
+    <AdminProfileModal     isOpen={isProfileOpen}
+  onClose={() => setIsProfileOpen(false)}
+  admin={user}/>
+  </>
+
+
+
   );
 }

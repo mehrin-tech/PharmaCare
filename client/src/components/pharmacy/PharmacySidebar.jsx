@@ -79,16 +79,12 @@ const PharmacySidebar = ({ isOpen = true, onClose }) => {
             onClick={onClose}
             className="flex items-center gap-2"
           >
-            {/* <HeartPulse
-              size={27}
-              strokeWidth={2.3}
-              className="text-[#42D6A0]"
-            /> */}
-              <img
-                              src={logo}
-                              alt="PharmaCare"
-                              className="w-[24px] h-[24px] object-contain"
-                            />
+
+            <img
+              src={logo}
+              alt="PharmaCare"
+              className="w-[24px] h-[24px] object-contain"
+            />
 
             <div>
               <h1 className="text-[17px] font-bold tracking-tight text-white">
@@ -123,10 +119,9 @@ const PharmacySidebar = ({ isOpen = true, onClose }) => {
                 className={({ isActive }) =>
                   `flex h-[40px] items-center gap-3 rounded-lg
                   px-3 text-[11px] transition-colors duration-200
-                  ${
-                    isActive
-                      ? "bg-[#0F9D74] font-semibold text-white"
-                      : "text-[#D1E5DE] hover:bg-[#205447] hover:text-white"
+                  ${isActive
+                    ? "bg-[#0F9D74] font-semibold text-white"
+                    : "text-[#D1E5DE] hover:bg-[#205447] hover:text-white"
                   }`
                 }
               >

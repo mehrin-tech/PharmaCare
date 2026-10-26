@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import deliveryBoy from "../../assets/deliveryBoy.png";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -22,6 +22,7 @@ import logo from "../../assets/logo.png";
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const location = useLocation();
   const dispatch=useDispatch()
+  const navigate=useNavigate()
 
   const cart=useSelector((state)=>state.cart.cart)
 
@@ -275,7 +276,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
             </div>
 
-            <button
+            <button 
               className="
                 w-full
                 bg-[#0F9D74]
@@ -285,6 +286,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 rounded-md
                 mt-1
               "
+              onClick={()=>navigate('/medicines')}
             >
               Shop Now
             </button>
