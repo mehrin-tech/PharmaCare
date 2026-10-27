@@ -8,25 +8,28 @@ import { getMyOrders } from "../../redux/slices/orderSlice";
 
 import OrderTabs from "../../components/customer/Orders/OrderTabs";
 import OrderCard from "../../components/customer/Orders/OrderCard";
-
+import Pagination from "../../components/Pagination/Pagination";
 function MyOrders() {
 
   const dispatch = useDispatch();
 
-  const { orders, loading, error } = useSelector(
+  const { orders, loading, error,pagination } = useSelector(
     (state) => state.orders
   );
 
   const [activeTab, setActiveTab] = useState("all");
-
+  const [currentPage, setCurrentPage] = useState(1);
+const limit = 2
 
   // =========================
   // GET ORDERS
   // =========================
 
   useEffect(() => {
-    dispatch(getMyOrders());
-  }, [dispatch]);
+    dispatch(getMyOrders({
+      page:currentPage,limit
+    }));
+  }, [dispatch,currentPage]);
 
 
   // =========================
@@ -100,10 +103,17 @@ function MyOrders() {
 
 
           {/* TABS */}
-          <OrderTabs
+          {/* <OrderTabs
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-          />
+          /> */}
+          <OrderTabs
+  activeTab={activeTab}
+  setActiveTab={(tab) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  }}
+/>
 
 
           {/* LOADING */}
@@ -168,7 +178,9 @@ function MyOrders() {
                       key={order._id}
                       order={order}
                     />
+                    
                   ))
+
 
                 ) : (
 
@@ -189,6 +201,14 @@ function MyOrders() {
                   </div>
 
                 )}
+                <Pagination
+  currentPage={pagination.currentPage || currentPage}
+  totalPages={pagination.totalPages || 0}
+  totalItems={pagination.totalOrders || 0}
+  limit={limit}
+  onPageChange={setCurrentPage}
+  loading={loading}
+/>
 
               </div>
 

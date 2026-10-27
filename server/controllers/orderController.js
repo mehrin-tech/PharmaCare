@@ -386,33 +386,86 @@ Please login to your PharmaCare pharmacy dashboard to process the order.`
 }
 
 
-export const getMyOrders=async(req,res)=>{
-    try{
-        const userId=req.user.userId
-        const orders=await Order.find({
-            user:userId
-        }) .populate("pharmacy", "pharmacyName ownerName phone image")
-      .populate("items.medicine", "name image")
-        .populate('address').sort({createdAt:-1})
+// export const getMyOrders=async(req,res)=>{
+//     try{
+//         const userId=req.user.userId
+//         const orders=await Order.find({
+//             user:userId
+//         }) .populate("pharmacy", "pharmacyName ownerName phone image")
+//       .populate("items.medicine", "name image")
+//         .populate('address').sort({createdAt:-1})
 
-         return res.status(200).json({
-            success: true,
-            count: orders.length,
-            orders
-        })
+//          return res.status(200).json({
+//             success: true,
+//             count: orders.length,
+//             orders
+//         })
 
-    }catch(error){
+//     }catch(error){
 
-           console.log('Get my orders error:', error)
+//            console.log('Get my orders error:', error)
 
-        return res.status(500).json({
-            success: false,
-            message: 'Failed to get orders',
-            error: error.message
-        })
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Failed to get orders',
+//             error: error.message
+//         })
 
-    }
-}
+//     }
+// }
+
+export const getMyOrders = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Pagination
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(
+      50,
+      Math.max(1, Number(req.query.limit) || 10)
+    );
+    const skip = (page - 1) * limit;
+
+    const filter = { user: userId };
+
+    // Fetch orders and total count
+    const [orders, totalOrders] = await Promise.all([
+      Order.find(filter)
+        .populate("pharmacy", "pharmacyName ownerName phone image")
+        .populate("items.medicine", "name image")
+        .populate("address")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Order.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalOrders,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.log("Get my orders error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get orders",
+      error: error.message,
+    });
+  }
+};
 
 export const getOrderDetails = async (req, res) => {
   try {
@@ -821,55 +874,132 @@ export const trackOrder=async(req,res)=>{
 
     }
 }
-export const getPharmacyOrders=async(req,res)=>{
-    try{
+// export const getPharmacyOrders=async(req,res)=>{
+//     try{
 
-        const pharmacy=await Pharmacy.findOne({
-            user:req.user.userId
-        })
+//         const pharmacy=await Pharmacy.findOne({
+//             user:req.user.userId
+//         })
 
-        if(!pharmacy){
-            return res.status(404).json({
-                success: false,
-                message: 'Pharmacy profile not found'
-            })
-        }
+//         if(!pharmacy){
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'Pharmacy profile not found'
+//             })
+//         }
 
-        if(pharmacy.approvalStatus!=='approved' || !pharmacy.isActive){
-             return res.status(403).json({
-                success: false,
-                message: 'Pharmacy is not approved or active'
-            })
-        }
+//         if(pharmacy.approvalStatus!=='approved' || !pharmacy.isActive){
+//              return res.status(403).json({
+//                 success: false,
+//                 message: 'Pharmacy is not approved or active'
+//             })
+//         }
 
-        const medicines=await Medicine.find({
-            pharmacy:pharmacy._id
-        }).select('_id')
+//         const medicines=await Medicine.find({
+//             pharmacy:pharmacy._id
+//         }).select('_id')
 
 
-        const medicineIds=medicines.map(medicine=>medicine._id)
+//         const medicineIds=medicines.map(medicine=>medicine._id)
 
-        const orders=await Order.find({
-            'items.medicine':{$in:medicineIds}
-        }).populate('user','name email phone')
-        .populate('address')
-        .populate('items.medicine')
-        .sort({createdAt:-1})
+//         const orders=await Order.find({
+//             'items.medicine':{$in:medicineIds}
+//         }).populate('user','name email phone')
+//         .populate('address')
+//         .populate('items.medicine')
+//         .sort({createdAt:-1})
 
-         return res.status(200).json({
-            success: true,
-            count: orders.length,
-            orders
-        })
-    }catch(error){
-          return res.status(500).json({
-            success: false,
-            message: 'Failed to fetch pharmacy orders',
-            error: error.message
-        })
+//          return res.status(200).json({
+//             success: true,
+//             count: orders.length,
+//             orders
+//         })
+//     }catch(error){
+//           return res.status(500).json({
+//             success: false,
+//             message: 'Failed to fetch pharmacy orders',
+//             error: error.message
+//         })
 
+//     }
+// }
+
+export const getPharmacyOrders = async (req, res) => {
+  try {
+    const pharmacy = await Pharmacy.findOne({
+      user: req.user.userId,
+    });
+
+    if (!pharmacy) {
+      return res.status(404).json({
+        success: false,
+        message: "Pharmacy profile not found",
+      });
     }
-}
+
+    if (pharmacy.approvalStatus !== "approved" || !pharmacy.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: "Pharmacy is not approved or active",
+      });
+    }
+
+    // Pagination
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10));
+    const skip = (page - 1) * limit;
+
+    // Get medicines belonging to this pharmacy
+    const medicines = await Medicine.find({
+      pharmacy: pharmacy._id,
+    }).select("_id");
+
+    const medicineIds = medicines.map((medicine) => medicine._id);
+
+    // Preserve the original order filter
+    const filter = {
+      "items.medicine": { $in: medicineIds },
+    };
+
+    const [orders, totalOrders] = await Promise.all([
+      Order.find(filter)
+        .populate("user", "name email phone")
+        .populate("address")
+        .populate("items.medicine")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Order.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalOrders,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.error("Get pharmacy orders error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch pharmacy orders",
+      error: error.message,
+    });
+  }
+};
+
+
 export const cancelOrder = async (req, res) => {
   try {
 

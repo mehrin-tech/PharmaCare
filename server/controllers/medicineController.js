@@ -122,41 +122,111 @@ export const addMedicine = async (req, res) => {
 }
 
 
+// export const getMyMedicines = async (req, res) => {
+//     try {
+//         const pharmacy = await Pharmacy.findOne({
+//             user: req.user.userId
+//         })
+
+//         if (!pharmacy) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'Pharmacy not found'
+//             })
+//         }
+
+//         const medicines = await Medicine.find({
+//             pharmacy: pharmacy._id,
+//             isActive: true
+//         }).sort({ createdAt: -1 })
+
+//         return res.status(200).json({
+//             success: true,
+//             count: medicines.length,
+//             medicines
+//         })
+
+//     } catch (error) {
+//         console.log('Get medicines error:', error)
+
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Failed to fetch medicines',
+//             error: error.message
+//         })
+
+//     }
+// }
+
+
+// Get my medicines with pagination
 export const getMyMedicines = async (req, res) => {
-    try {
-        const pharmacy = await Pharmacy.findOne({
-            user: req.user.userId
-        })
+  try {
+    // 1. Find pharmacy belonging to the logged-in user
+    const pharmacy = await Pharmacy.findOne({
+      user: req.user.userId,
+    });
 
-        if (!pharmacy) {
-            return res.status(404).json({
-                success: false,
-                message: 'Pharmacy not found'
-            })
-        }
-
-        const medicines = await Medicine.find({
-            pharmacy: pharmacy._id,
-            isActive: true
-        }).sort({ createdAt: -1 })
-
-        return res.status(200).json({
-            success: true,
-            count: medicines.length,
-            medicines
-        })
-
-    } catch (error) {
-        console.log('Get medicines error:', error)
-
-        return res.status(500).json({
-            success: false,
-            message: 'Failed to fetch medicines',
-            error: error.message
-        })
-
+    if (!pharmacy) {
+      return res.status(404).json({
+        success: false,
+        message: "Pharmacy not found",
+      });
     }
-}
+
+    // 2. Get pagination parameters
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(
+      50,
+      Math.max(1, Number(req.query.limit) || 10)
+    );
+
+    const skip = (page - 1) * limit;
+
+    // 3. Define filter
+    const filter = {
+      pharmacy: pharmacy._id,
+      isActive: true,
+    };
+
+    // 4. Fetch medicines and total count
+    const [medicines, totalMedicines] = await Promise.all([
+      Medicine.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Medicine.countDocuments(filter),
+    ]);
+
+    // 5. Calculate total pages
+    const totalPages = Math.ceil(totalMedicines / limit);
+
+    // 6. Send response
+    return res.status(200).json({
+      success: true,
+      count: medicines.length,
+      medicines,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalMedicines,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.log("Get medicines error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch medicines",
+      error: error.message,
+    });
+  }
+};
+
 export const getAllActiveMedicines = async (req, res) => {
     try {
         const medicines = await Medicine.find({

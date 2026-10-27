@@ -43,7 +43,7 @@ export function Login() {
   const getDashboardPath = (user) => {
     switch (user?.role) {
       case "customer":
-        return "/home";
+        return "/dashboard";
 
       case "pharmacy":
         // Use your actual pharmacy dashboard route.

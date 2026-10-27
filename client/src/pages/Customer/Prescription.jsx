@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect,useState } from "react";
+import { useDispatch,useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import Sidebar from "../../components/customer/Sidebar";
@@ -9,9 +9,16 @@ import PrescriptionUpload from "../../components/customer/Prescription/Prescript
 import PrescriptionList from "../../components/customer/Prescription/PrescriptionList";
 
 import { getMyPrescriptions } from "../../redux/slices/prescriptionSlice";
+import Pagination from "../../components/Pagination/Pagination";
 
 const Prescription = () => {
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+const limit = 2
+
+const { pagination, loading, prescriptions } = useSelector(
+  (state) => state.prescription
+);
 
     const [searchParams] = useSearchParams();
 
@@ -20,8 +27,11 @@ const Prescription = () => {
   const medicineName = searchParams.get("medicineName");
 
   useEffect(() => {
-    dispatch(getMyPrescriptions());
-  }, [dispatch]);
+    dispatch(getMyPrescriptions({
+      page:currentPage,
+      limit
+    }));
+  }, [dispatch,currentPage,limit]);
 
   return (
     <div className="min-h-screen bg-[#F7F9FA] md:flex">
@@ -56,6 +66,18 @@ const Prescription = () => {
 
           {/* MY PRESCRIPTIONS */}
           <PrescriptionList />
+          {prescriptions.length > 0 && (
+  <div className="mt-5">
+    <Pagination
+      currentPage={pagination.currentPage || currentPage}
+      totalPages={pagination.totalPages || 0}
+      totalItems={pagination.totalPrescriptions || 0}
+      limit={limit}
+      onPageChange={setCurrentPage}
+      loading={loading}
+    />
+  </div>
+)}
 
         </main>
       </div>

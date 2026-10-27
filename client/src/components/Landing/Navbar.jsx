@@ -6,21 +6,36 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "How it works", path: "/howitworks" },
-    { name: "Top Offers", path: "/offersection" },
-    { name: "Why PharmaCare", path: "/trustsection" },
+    { name: "Home", id: "home" },
+    { name: "About", id: "about" },
+    { name: "How it works", id: "how-it-works" },
+    { name: "Top Offers", id: "top-offers" },
+    { name: "Why PharmaCare", id: "why-pharmacare" },
    
   ];
 
   const closeMenu = () => setIsMenuOpen(false);
+  const handleScroll=(id)=>{
+    if(id==='home'){
+      window.scrollTo({
+        top:0,
+        behavior:'smooth'
+      })
+    }else{
+      document.getElementById(id)?.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      })
+    }
+
+    closeMenu()
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-100 bg-white">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <nav className="flex w-full items-center justify-between px-6 py-4 sm:px-8 lg:px-[5%]">
 
-        {/* Logo */}
+       
         <Link
           to="/"
           onClick={closeMenu}
@@ -41,10 +56,34 @@ const Navbar = () => {
               Your Health, Our Priority
             </p>
           </div>
-        </Link>
+        </Link> 
+  {/* <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8"> */}
+
+    {/* Logo */}
+    {/* <Link
+      to="/"
+      onClick={closeMenu}
+      className="flex items-center gap-2"
+    >
+      <img
+        src={logo}
+        alt="PharmaCare"
+        className="h-12 w-12 object-contain"
+      />
+
+      <div>
+        <h1 className="text-xl font-bold text-gray-900">
+          Pharma<span className="text-[#0F9D74]">Care</span>
+        </h1>
+
+        <p className="text-xs text-gray-500">
+          Your Health, Our Priority
+        </p>
+      </div>
+    </Link> */}
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-8 md:flex">
+        {/* <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
@@ -60,7 +99,19 @@ const Navbar = () => {
               {link.name}
             </NavLink>
           ))}
-        </div>
+        </div> */}
+        <div className="hidden items-center gap-8 md:flex">
+  {navLinks.map((link) => (
+    <button
+      key={link.id}
+      type="button"
+      onClick={() => handleScroll(link.id)}
+      className="text-sm font-medium text-gray-600 transition-colors hover:text-[#0F9D74]"
+    >
+      {link.name}
+    </button>
+  ))}
+</div>
 
         {/* Desktop Auth Buttons */}
         <div className="hidden items-center gap-3 md:flex">
@@ -95,7 +146,7 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="border-t border-gray-100 bg-white px-4 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            {navLinks.map((link) => (
+            {/* {navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
@@ -110,7 +161,21 @@ const Navbar = () => {
               >
                 {link.name}
               </NavLink>
-            ))}
+            ))} */}
+            <div className="flex flex-col gap-4">
+  {navLinks.map((link) => (
+    <button
+      key={link.id}
+      type="button"
+      onClick={() => handleScroll(link.id)}
+      className="text-left text-sm font-medium text-gray-600 hover:text-[#0F9D74]"
+    >
+      {link.name}
+    </button>
+  ))}
+
+  {/* Login and Sign Up buttons ഇവിടെ തുടരാം */}
+
 
             <div className="flex gap-3 border-t border-gray-100 pt-4">
               <Link
@@ -137,6 +202,7 @@ const Navbar = () => {
               </Link> */}
             </div>
           </div>
+        </div>
         </div>
       )}
     </header>

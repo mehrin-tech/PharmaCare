@@ -4,9 +4,11 @@ import api from '../../services/api'
 
 export const getMyPrescriptions=createAsyncThunk(
     'prescription/getMyPrescriptions',
-    async(_,{rejectWithValue})=>{
+    async({page=1,limit=5}={},{rejectWithValue})=>{
         try{
-            const response=await api.get("/prescriptions/my")
+            const response=await api.get("/prescriptions/my",{
+              params:{page,limit}
+            })
             return response.data
 
 
@@ -105,10 +107,12 @@ export const rejectPrescription = createAsyncThunk(
 
 export const getAllPharmacyPrescriptions = createAsyncThunk(
   "prescription/getAllPharmacyPrescriptions",
-  async (_, { rejectWithValue }) => {
+  async ({page=1,limit=10}={}, { rejectWithValue }) => {
     try {
-      const response = await api.get("/prescriptions/pharmacy/all");
-      return response.data.prescriptions || [];
+      const response = await api.get("/prescriptions/pharmacy/all",{
+        params:{page,limit}
+      });
+      return response.data || [];
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
@@ -133,6 +137,14 @@ const initialState = {
   actionLoading: false,
   pendingError: null,
   actionError: null,
+  pagination: {
+  currentPage: 1,
+  totalPages: 0,
+  totalPrescriptions: 0,
+  limit: 10,
+  hasNextPage: false,
+  hasPrevPage: false,
+},
 };
 
 const prescriptionSlice = createSlice({
@@ -155,15 +167,27 @@ const prescriptionSlice = createSlice({
         state.error = null;
       })
 
-      .addCase(
-        getMyPrescriptions.fulfilled,
-        (state, action) => {
-          state.loading = false;
+      // .addCase(
+      //   getMyPrescriptions.fulfilled,
+      //   (state, action) => {
+      //     state.loading = false;
 
-          state.prescriptions =
-            action.payload.prescriptions || [];
-        }
-      )
+      //     state.prescriptions =
+      //       action.payload.prescriptions || [];
+      //   }
+      // )
+
+      .addCase(getMyPrescriptions.fulfilled, (state, action) => {
+  state.loading = false;
+
+  state.prescriptions =
+    action.payload?.prescriptions || [];
+
+  state.pagination =
+    action.payload?.pagination || state.pagination;
+
+  state.error = null;
+})
 
       .addCase(
         getMyPrescriptions.rejected,
@@ -280,9 +304,19 @@ const prescriptionSlice = createSlice({
   state.pendingLoading = true;
   state.pendingError = null;
 })
+// .addCase(getAllPharmacyPrescriptions.fulfilled, (state, action) => {
+//   state.pendingLoading = false;
+//   state.allPharmacyPrescriptions = action.payload;
+// })
+
 .addCase(getAllPharmacyPrescriptions.fulfilled, (state, action) => {
   state.pendingLoading = false;
-  state.allPharmacyPrescriptions = action.payload;
+
+  state.allPharmacyPrescriptions =
+    action.payload?.prescriptions || [];
+
+  state.pagination =
+    action.payload?.pagination || state.pagination;
 })
 .addCase(getAllPharmacyPrescriptions.rejected, (state, action) => {
   state.pendingLoading = false;

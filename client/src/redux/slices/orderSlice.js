@@ -5,9 +5,11 @@ import api from "../../services/api";
 
 export const getMyOrders=createAsyncThunk(
     'orders/getMyOrders',
-    async(_,{rejectWithValue})=>{
+    async({page=1,limit=10}={},{rejectWithValue})=>{
         try{
-            const response=await api.get('/orders/my')
+            const response=await api.get('/orders/my',{
+              params:{page,limit}
+            })
             return response.data
 
         }catch(error){
@@ -72,11 +74,13 @@ export const getOrderDetails = createAsyncThunk(
 // FETCH PHARMACY ORDERS
 export const getPharmacyOrders = createAsyncThunk(
   "orders/getPharmacyOrders",
-  async (_, { rejectWithValue }) => {
+  async ({page=1,limit=10}={}, { rejectWithValue }) => {
     try {
-      const response = await api.get("/orders/pharmacy");
+      const response = await api.get("/orders/pharmacy",{
+        params:{page,limit}
+      });
        console.log("PHARMACY ORDERS RESPONSE:", response.data);
-      return response.data.orders || [];
+      return response.data || [];
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
@@ -144,6 +148,15 @@ const initialState = {
   pharmacyOrdersError: null,
   orderActionLoading: false,
   orderActionError: null,
+
+  pagination: {
+  currentPage: 1,
+  totalPages: 0,
+  totalOrders: 0,
+  limit: 10,
+  hasNextPage: false,
+  hasPrevPage: false,
+},
 };
 
 const orderSlice=createSlice({
@@ -165,10 +178,13 @@ const orderSlice=createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(getMyOrders.fulfilled,(state,action)=>{
-        state.loading=false
-        state.orders=action.payload.orders || []
-      })
+     .addCase(getMyOrders.fulfilled, (state, action) => {
+  state.loading = false;
+  state.orders = action.payload?.orders || [];
+  state.pagination =
+    action.payload?.pagination || state.pagination;
+  state.error = null;
+})
       .addCase(getMyOrders.rejected, (state, action) => {
         state.loading = false;
 
@@ -246,8 +262,12 @@ const orderSlice=createSlice({
   state.pharmacyOrdersError = null;
 })
 .addCase(getPharmacyOrders.fulfilled, (state, action) => {
+  state.pharmacyOrders = action.payload?.orders || [];
+
+  state.pagination =
+    action.payload?.pagination || state.pagination;
+
   state.pharmacyOrdersLoading = false;
-  state.pharmacyOrders = action.payload;
 })
 .addCase(getPharmacyOrders.rejected, (state, action) => {
   state.pharmacyOrdersLoading = false;

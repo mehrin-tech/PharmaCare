@@ -5,10 +5,12 @@ import api from '../../services/api'
 
 export const getAllAdminOrders=createAsyncThunk(
     'adminOrder/getAllOrders',
-    async(_,{rejectWithValue})=>{
+    async({page=1,limit=10}={},{rejectWithValue})=>{
         try{
 
-            const response=await api.get('/admin/orders')
+            const response=await api.get('/admin/orders',{
+              params:{page,limit}
+            })
             console.log('response:',response.data)
             return response.data
 
@@ -67,6 +69,15 @@ const initialState = {
   ordersError: null,
   statisticsError: null,
   detailsError: null,
+
+  pagination: {
+  currentPage: 1,
+  totalPages: 0,
+  totalOrders: 0,
+  limit: 10,
+  hasNextPage: false,
+  hasPrevPage: false,
+},
 };
 
 
@@ -91,14 +102,21 @@ const adminOrderSlice = createSlice({
         state.ordersLoading = true;
         state.ordersError = null;
       })
-      .addCase(getAllAdminOrders.fulfilled, (state, action) => {
-        state.ordersLoading = false;
+    .addCase(getAllAdminOrders.fulfilled, (state, action) => {
+  state.ordersLoading = false;
 
-        // Supports either { orders: [...] } or a direct array
-        state.orders = Array.isArray(action.payload)
-          ? action.payload
-          : action.payload?.orders || [];
-      })
+  const payload = action.payload;
+
+  state.orders = Array.isArray(payload?.orders)
+    ? payload.orders
+    : [];
+
+  if (payload?.pagination) {
+    state.pagination = payload.pagination;
+  }
+
+  state.ordersError = null;
+})
       .addCase(getAllAdminOrders.rejected, (state, action) => {
         state.ordersLoading = false;
         state.ordersError = action.payload;

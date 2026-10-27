@@ -10,11 +10,11 @@ import { fetchMyMedicines,deleteMedicine } from "../../redux/slices/medicineSlic
 import { setInventory } from "../../redux/slices/inventorySlice";
 import MedicineDetailsModal from "../../components/pharmacy/Medicines/MedicineDetailsModal";
 import EditMedicineModal from "../../components/pharmacy/Medicines/EditMedicineModal";
-
+import Pagination from "../../components/Pagination/Pagination";
 const Inventory = () => {
   const dispatch = useDispatch();
 
-  const { medicines, loading, error } = useSelector(
+  const { medicines, loading, error ,pagination} = useSelector(
     (state) => state.medicines
   );
 
@@ -28,10 +28,15 @@ const [deletingMedicine, setDeletingMedicine] = useState(null);
 const [isAddStockOpen, setIsAddStockOpen] = useState(false);
 const [stockMedicine, setStockMedicine] = useState(null);
 
+const [currentPage, setCurrentPage] = useState(1);
+const limit = 5;
+
   // Fetch existing medicines
   useEffect(() => {
-    dispatch(fetchMyMedicines());
-  }, [dispatch]);
+    dispatch(fetchMyMedicines({
+      page:currentPage,limit
+    }));
+  }, [dispatch,currentPage]);
 
   // Sync existing medicines with inventory slice
   useEffect(() => {
@@ -175,6 +180,16 @@ const handleConfirmDelete = async () => {
  
 
 />
+{!loading && !error && (
+  <Pagination
+    currentPage={pagination.currentPage || currentPage}
+    totalPages={pagination.totalPages || 0}
+    totalItems={pagination.totalMedicines || 0}
+    limit={limit}
+    onPageChange={setCurrentPage}
+    loading={loading}
+  />
+)}
 <MedicineDetailsModal
   medicine={selectedMedicine}
   isOpen={isDetailsOpen}

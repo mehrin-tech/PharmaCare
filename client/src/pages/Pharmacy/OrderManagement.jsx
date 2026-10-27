@@ -1,133 +1,4 @@
 
-// import React, { useEffect, useMemo, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-
-// import OrderFilters from "../../components/pharmacy/Orders/OrderFilters";
-// import OrdersTable from "../../components/pharmacy/Orders/OrdersTable";
-// import OrderDetailsModal from "../../components/pharmacy/Orders/OrderDetailsModal";
-// import {
-//   getPharmacyOrders,
-//   updateOrderStatus,
-// } from "../../redux/slices/orderSlice";
-
-// const OrderManagement = () => {
-//   const dispatch = useDispatch();
-
-//   const {
-//     pharmacyOrders = [],
-//     pharmacyOrdersLoading,
-//     pharmacyOrdersError,
-//     orderActionLoading,
-//   } = useSelector((state) => state.orders);
-
-//   const [search, setSearch] = useState("");
-//   const [activeTab, setActiveTab] = useState("all");
-//   const [paymentFilter, setPaymentFilter] = useState("all");
-//   const [dateFilter, setDateFilter] = useState("");
-
-//   const [selectedOrder, setSelectedOrder] = useState(null);
-
-
-//   useEffect(() => {
-//     dispatch(getPharmacyOrders());
-//   }, [dispatch]);
-
-//   const filteredOrders = useMemo(() => {
-//     const query = search.trim().toLowerCase();
-
-//     return pharmacyOrders.filter((order) => {
-//       const matchesStatus =
-//         activeTab === "all" || order.orderStatus === activeTab;
-
-//       const matchesSearch = [
-//         order.orderNumber,
-//         order._id,
-//         order.user?.name,
-//         order.user?.email,
-//       ].some((value) =>
-//         String(value || "").toLowerCase().includes(query)
-//       );
-
-//       const matchesPayment =
-//         paymentFilter === "all" ||
-//         order.paymentStatus === paymentFilter;
-
-//       const matchesDate =
-//         !dateFilter ||
-//         (order.createdAt &&
-//           new Date(order.createdAt).toISOString().slice(0, 10) ===
-//             dateFilter);
-
-//       return (
-//         matchesStatus &&
-//         matchesSearch &&
-//         matchesPayment &&
-//         matchesDate
-//       );
-//     });
-//   }, [pharmacyOrders, search, activeTab, paymentFilter, dateFilter]);
-
-//   const handleUpdateStatus = async (orderId, status) => {
-//     const result = await dispatch(
-//       updateOrderStatus({ orderId, status })
-//     );
-
-//     if (updateOrderStatus.fulfilled.match(result)) {
-//       dispatch(getPharmacyOrders());
-//     }
-//   };
-
-
-  
-// const handleViewOrder = (order) => {
-//   setSelectedOrder(order);
-// };
-
-//   return (
-//     <div className="space-y-6 p-4 md:p-6">
-//       <div>
-//         <h1 className="text-2xl font-bold text-gray-900">
-//           Order Management
-//         </h1>
-//         <p className="mt-1 text-sm text-gray-500">
-//           Manage and track customer orders.
-//         </p>
-//       </div>
-
-//       {pharmacyOrdersError && (
-//         <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-//           {pharmacyOrdersError}
-//         </p>
-//       )}
-
-//       <OrderFilters
-//         orders={pharmacyOrders}
-//         search={search}
-//         onSearchChange={setSearch}
-//         activeTab={activeTab}
-//         onTabChange={setActiveTab}
-//         paymentFilter={paymentFilter}
-//         onPaymentFilterChange={setPaymentFilter}
-//         dateFilter={dateFilter}
-//         onDateFilterChange={setDateFilter}
-//         onRefresh={() => dispatch(getPharmacyOrders())}
-//         loading={pharmacyOrdersLoading}
-//       />
-
-//       <OrdersTable
-//         orders={filteredOrders}
-//         loading={pharmacyOrdersLoading}
-//         actionLoading={orderActionLoading}
-//         onView={handleViewOrder}
-//         onUpdateStatus={handleUpdateStatus}
-//       />
-//       <OrderDetailsModal  order={selectedOrder}
-//   onClose={() => setSelectedOrder(null)} />
-//     </div>
-//   );
-// };
-
-// export default OrderManagement;
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -141,6 +12,7 @@ import {
   updateOrderStatus,
   confirmCashReceived
 } from "../../redux/slices/orderSlice";
+import Pagination from "../../components/Pagination/Pagination";
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -150,7 +22,11 @@ const OrderManagement = () => {
     pharmacyOrdersLoading,
     pharmacyOrdersError,
     orderActionLoading,
+    pagination={}
   } = useSelector((state) => state.orders);
+
+  const [currentPage, setCurrentPage] = useState(1);
+const limit = 5;
 
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
@@ -161,8 +37,10 @@ const OrderManagement = () => {
   const [cashConfirmError, setCashConfirmError] = useState("");
 
   useEffect(() => {
-    dispatch(getPharmacyOrders());
-  }, [dispatch]);
+    dispatch(getPharmacyOrders({
+      page:currentPage,limit
+    }));
+  }, [dispatch,currentPage]);
 
   const filteredOrders = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -313,6 +191,17 @@ const OrderManagement = () => {
         onUpdateStatus={handleUpdateStatus}
         onConfirmCashReceived={handleConfirmCashReceived}
       />
+
+      {!pharmacyOrdersError && (
+  <Pagination
+    currentPage={pagination.currentPage || currentPage}
+    totalPages={pagination.totalPages || 0}
+    totalItems={pagination.totalOrders || 0}
+    limit={limit}
+    onPageChange={setCurrentPage}
+    loading={pharmacyOrdersLoading}
+  />
+)}
 
       <OrderDetailsModal
         order={selectedOrder}

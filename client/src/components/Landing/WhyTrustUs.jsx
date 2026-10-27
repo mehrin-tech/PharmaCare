@@ -98,7 +98,7 @@ const trustFeatures = [
 const WhyTrustUs = () => {
   return (
     <section
-      id="why-trust-us"
+      id="why-pharmacare"
       className="scroll-mt-20 bg-white px-4 py-8 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-8xl">

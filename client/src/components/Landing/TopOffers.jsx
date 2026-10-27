@@ -115,15 +115,60 @@ const offers = [
   color: "bg-[#F7F5EF]",
   image: SupplementsImg,
 },
+{
+  id: 13,
+  label: "SPECIAL",
+  discount: "10%",
+  subtitle: "OFF",
+  title: "On Health Care",
+  color: "bg-[#E2F7E9]",
+  image: HealthCareImg,
+},
+{
+  id: 14,
+  label: "BUY 1 GET 1",
+  discount: "FREE",
+  subtitle: "",
+  title: "On Supplements",
+  color: "bg-[#F7F5EF]",
+  image: SupplementsImg,
+},
+{
+  id: 15,
+  label: "FLAT",
+  discount: "25%",
+  subtitle: "OFF",
+  title: "On All Medicines",
+  color: "bg-[#DDFBEA]",
+  image: paracetamolImg,
+},
+{
+  id: 16,
+  label: "Up to",
+  discount: "30%",
+  subtitle: "OFF",
+  title: "On Personal Care",
+  color: "bg-[#FFF0EB]",
+  image: PersonalCareIng,
+},
+{
+  id: 17,
+  label: "SPECIAL",
+  discount: "15%",
+  subtitle: "OFF",
+  title: "On Health Care",
+  color: "bg-[#E2F7E9]",
+  image: HealthCareImg,
+},
 ];
 
 const getVisibleCards = () => {
-  if (typeof window === "undefined") return 4;
+  if (typeof window === "undefined") return 6;
 
   if (window.innerWidth < 640) return 1;
   if (window.innerWidth < 1024) return 2;
 
-  return 4;
+  return 6;
 };
 
 const TopOffers = () => {
@@ -155,10 +200,10 @@ const TopOffers = () => {
 
   return (
     <section
-      id="offers"
+      id="top-offers"
       className="scroll-mt-20 bg-white px-4 py-10 sm:px-6 lg:px-8"
     >
-      <div className="mx-auto max-w-8xl">
+      <div className="mx-auto max-w-7xl">
         {/* Heading */}
         <h2 className="mb-6 text-center text-xl font-bold text-gray-900">
           Top Offers for You

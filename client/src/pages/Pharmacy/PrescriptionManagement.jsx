@@ -21,6 +21,7 @@ import {
   approvePrescription,
   rejectPrescription,
 } from "../../redux/slices/prescriptionSlice";
+import Pagination from "../../components/Pagination/Pagination";
 
 const PrescriptionManagement = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const PrescriptionManagement = () => {
     pendingError,
     actionLoading,
     actionError,
+    pagination={}
   } = useSelector((state) => state.prescription);
 
   const [search, setSearch] = useState("");
@@ -44,10 +46,15 @@ const PrescriptionManagement = () => {
 
   const [rejectionReason, setRejectionReason] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+const limit = 5;
+
   // Fetch all pharmacy prescriptions
   useEffect(() => {
-    dispatch(getAllPharmacyPrescriptions());
-  }, [dispatch]);
+    dispatch(getAllPharmacyPrescriptions({
+      page:currentPage,limit
+    }));
+  }, [dispatch,currentPage]);
 
   // Filter by status and search
   const filteredPrescriptions = useMemo(() => {
@@ -185,6 +192,16 @@ const PrescriptionManagement = () => {
         onReject={openRejectModal}
       />
 
+{!pendingError && (
+  <Pagination
+    currentPage={pagination.currentPage || currentPage}
+    totalPages={pagination.totalPages || 0}
+    totalItems={pagination.totalPrescriptions || 0}
+    limit={limit}
+    onPageChange={setCurrentPage}
+    loading={pendingLoading}
+  />
+)}
       {/* Prescription details */}
       <PrescriptionDetailsModal
         prescription={selectedPrescription}

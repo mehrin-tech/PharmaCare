@@ -1,29 +1,60 @@
 import Order from '../models/Order.js'
 
+// Get all orders with pagination
 export const getAllOrders = async (req, res) => {
-    try {
-        const orders = await Order.find()
-            .populate('user', 'name email phone')
-            .populate('address')
-            .populate('items.medicine', 'name price pharmacy')
-            .sort({ createdAt: -1 })
+  try {
+    // 1. Get page and limit
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(
+      50,
+      Math.max(1, Number(req.query.limit) || 10)
+    );
 
-        return res.status(200).json({
-            success: true,
-            count: orders.length,
-            orders
-        })
+    // 2. Calculate skip
+    const skip = (page - 1) * limit;
 
-    } catch (error) {
-        console.log('get all orders error:', error)
+    // 3. Fetch orders and total count
+    const [orders, totalOrders] = await Promise.all([
+      Order.find()
+        .populate("user", "name email phone")
+        .populate("address")
+        .populate("items.medicine", "name price pharmacy")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
 
-        return res.status(500).json({
-            success: false,
-            message: 'failed to fetch orders',
-            error: error.message
-        })
-    }
-}
+      Order.countDocuments(),
+    ]);
+
+    // 4. Calculate total pages
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    // 5. Send response
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalOrders,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.log("get all orders error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+};
+
+
 
 export const getAdminOrderDetails = async (req, res) => {
     try {

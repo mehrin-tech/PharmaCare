@@ -3,10 +3,12 @@ import api from '../../services/api'
 //fetch medicines 
 export const fetchMyMedicines = createAsyncThunk(
     'medicines/fetchMyMedicines',
-    async (_, { rejectWithValue }) => {
+    async ({page=1,limit=10}={}, { rejectWithValue }) => {
         try {
-            const response = await api.get('/medicines/my')
-            return response.data.medicines
+            const response = await api.get('/medicines/my',{
+                params:{page,limit}
+            })
+            return response.data
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "failed to fetch medicines")
         }
@@ -50,7 +52,16 @@ const medicineSlice = createSlice({
     initialState: {
         medicines: [],
         loading: false,
-        error: null
+        error: null,
+        pagination: {
+  currentPage: 1,
+  totalPages: 0,
+ 
+  totalOrders: 0,
+  limit: 10,
+  hasNextPage: false,
+  hasPrevPage: false,
+},
     },
     reducers: {
         clearMedicineError: (state) => {
@@ -63,11 +74,19 @@ const medicineSlice = createSlice({
             state.loading = true
             state.error = null
         })
-            .addCase(fetchMyMedicines.fulfilled, (state, action) => {
-                state.loading = false;
-                state.medicines = Array.isArray(action.payload) ? action.payload : []
-                state.error = null
-            })
+         .addCase(fetchMyMedicines.fulfilled, (state, action) => {
+  state.loading = false;
+
+  const payload = action.payload;
+
+  state.medicines = Array.isArray(payload?.medicines)
+    ? payload.medicines
+    : [];
+
+  state.pagination = payload?.pagination || state.pagination;
+
+  state.error = null;
+})
             .addCase(fetchMyMedicines.rejected, (state, action) => {
                 state.loading = false
                 state.error = typeof action.payload === 'string' ? action.payload : 'failed to fetch medicines'

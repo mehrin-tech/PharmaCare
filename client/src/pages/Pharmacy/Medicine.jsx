@@ -11,10 +11,11 @@ import EditMedicineModal from "../../components/pharmacy/Medicines/EditMedicineM
 import AddMedicineModal from "../../components/pharmacy/Medicines/AddMedicineModal";
 // import DeleteMedicineModal from
 //   "../../components/pharmacy/Medicines/DeleteMedicineModal";
+import Pagination from "../../components/Pagination/Pagination";
 const Medicine = () => {
     const dispatch = useDispatch()
 
-    const { medicines, loading, error } = useSelector((state) => state.medicines)
+    const { medicines, loading, error,pagination={} } = useSelector((state) => state.medicines)
 
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("all");
@@ -25,10 +26,12 @@ const Medicine = () => {
     const [editingMedicine, setEditingMedicine] = useState(null)
      const [showAddModal, setShowAddModal] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+const limit = 5;
 
 
     useEffect(() => {
-        dispatch(fetchMyMedicines())
+        dispatch(fetchMyMedicines({page:currentPage,limit}))
     }, [dispatch])
     console.log("Medicines from Redux:", medicines);
     console.log("Medicine loading:", loading);
@@ -167,6 +170,16 @@ const handleAddMedicine = async (formData) => {
                     onEdit={handleEditMedicine}  onDelete={handleDeleteMedicine}
                 />
             )}
+            {!loading && !error && (
+  <Pagination
+    currentPage={pagination.currentPage || currentPage}
+    totalPages={pagination.totalPages || 0}
+    totalItems={pagination.totalMedicines || 0}
+    limit={limit}
+    onPageChange={setCurrentPage}
+    loading={loading}
+  />
+)}
               
 
             <MedicineDetailsModal

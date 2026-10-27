@@ -111,29 +111,80 @@ export const uploadPrescription=async(req,res)=>{
     }
 }
 
-export const getMyPrescription=async(req,res)=>{
-    try{
-        const prescriptions=await Prescription.find({
-            user:req.user.userId
-        }) .populate("medicine", "name price")
-            .populate("pharmacy", "pharmacyName").sort({createdAt:-1})
+// export const getMyPrescription=async(req,res)=>{
+//     try{
+//         const prescriptions=await Prescription.find({
+//             user:req.user.userId
+//         }) .populate("medicine", "name price")
+//             .populate("pharmacy", "pharmacyName").sort({createdAt:-1})
 
-         return res.status(200).json({
-            success: true,
-            count: prescriptions.length,
-            prescriptions
-        })
+//          return res.status(200).json({
+//             success: true,
+//             count: prescriptions.length,
+//             prescriptions
+//         })
 
-    }catch(error){
-         console.log('Get prescriptions error:',error)
+//     }catch(error){
+//          console.log('Get prescriptions error:',error)
 
-        return res.status(500).json({
-            success: false,
-            message: 'Failed to fetch prescriptions'
-        })
+//         return res.status(500).json({
+//             success: false,
+//             message: 'Failed to fetch prescriptions'
+//         })
 
-    }
-}
+//     }
+// }
+
+export const getMyPrescription = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Pagination
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(
+      50,
+      Math.max(1, Number(req.query.limit) || 5)
+    );
+
+    const skip = (page - 1) * limit;
+
+    const filter = { user: userId };
+
+    const [prescriptions, totalPrescriptions] = await Promise.all([
+      Prescription.find(filter)
+        .populate("medicine", "name price")
+        .populate("pharmacy", "pharmacyName")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Prescription.countDocuments(filter),
+    ]);
+
+    const totalPages = Math.ceil(totalPrescriptions / limit);
+
+    return res.status(200).json({
+      success: true,
+      count: prescriptions.length,
+      prescriptions,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalPrescriptions,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.log("Get prescriptions error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch prescriptions",
+    });
+  }
+};
 
 export const getPendingPrescriptions=async(req,res)=>{
     try{
@@ -176,6 +227,42 @@ export const getPendingPrescriptions=async(req,res)=>{
     }
 }
 
+// export const getAllPharmacyPrescriptions = async (req, res) => {
+//   try {
+//     const pharmacy = await Pharmacy.findOne({
+//       user: req.user.userId,
+//     });
+
+//     if (!pharmacy) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Pharmacy not found",
+//       });
+//     }
+
+//     const prescriptions = await Prescription.find({
+//       pharmacy: pharmacy._id,
+//     })
+//       .populate("user", "name email")
+//       .populate("medicine", "name price")
+//       .populate("pharmacy", "pharmacyName")
+//       .sort({ createdAt: -1 });
+
+//     return res.status(200).json({
+//       success: true,
+//       count: prescriptions.length,
+//       prescriptions,
+//     });
+//   } catch (error) {
+//     console.log("Get all pharmacy prescriptions error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch prescriptions",
+//     });
+//   }
+// };
+
 export const getAllPharmacyPrescriptions = async (req, res) => {
   try {
     const pharmacy = await Pharmacy.findOne({
@@ -189,21 +276,48 @@ export const getAllPharmacyPrescriptions = async (req, res) => {
       });
     }
 
-    const prescriptions = await Prescription.find({
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(
+      50,
+      Math.max(1, Number(req.query.limit) || 10)
+    );
+
+    const skip = (page - 1) * limit;
+
+    // Existing pharmacy filter preserve ചെയ്യുക
+    const filter = {
       pharmacy: pharmacy._id,
-    })
-      .populate("user", "name email")
-      .populate("medicine", "name price")
-      .populate("pharmacy", "pharmacyName")
-      .sort({ createdAt: -1 });
+    };
+
+    const [prescriptions, totalPrescriptions] =
+      await Promise.all([
+        Prescription.find(filter)
+          .populate("user", "name email")
+          .populate("medicine", "name price")
+          .populate('pharmacy','pharmacyName')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
+
+        Prescription.countDocuments(filter),
+      ]);
+
+    const totalPages = Math.ceil(totalPrescriptions / limit);
 
     return res.status(200).json({
       success: true,
-      count: prescriptions.length,
       prescriptions,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalPrescriptions,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
     });
   } catch (error) {
-    console.log("Get all pharmacy prescriptions error:", error);
+    console.error("Get pharmacy prescriptions error:", error);
 
     return res.status(500).json({
       success: false,

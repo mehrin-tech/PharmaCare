@@ -10,11 +10,13 @@ import PharmacyTable from "../../components/admin/PharmacyManagement/PharmacyTab
 import PharmacyDetailsModal from
   "../../components/admin/PharmacyManagement/PharmacyDetailsModal";
 import { getAllPharmacies,rejectPharmacy,approvePharmacy } from "../../redux/slices/pharmacySlice";
-
+import Pagination from "../../components/Pagination/Pagination";
 const PharmacyManagement = () => {
   const dispatch = useDispatch();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+const limit = 6
 
   // Filters
   const [search, setSearch] = useState("");
@@ -30,12 +32,13 @@ const PharmacyManagement = () => {
     allPharmacies = [],
     allPharmaciesLoading = false,
     allPharmaciesError = null,
+    pagination={},
   } = useSelector((state) => state.pharmacy || {});
 
   // Fetch pharmacies once when page mounts
   useEffect(() => {
-    dispatch(getAllPharmacies());
-  }, [dispatch]);
+    dispatch(getAllPharmacies({page:currentPage,limit}));
+  }, [dispatch,currentPage]);
   
   const handleReject=async(pharmacy,reason)=>{
     try{
@@ -160,6 +163,14 @@ const PharmacyManagement = () => {
               accountStatus={accountStatus}
 onView={setSelectedPharmacy}            />
           </div>
+          <Pagination
+  currentPage={pagination.currentPage || currentPage}
+  totalPages={pagination.totalPages || 0}
+  totalItems={pagination.totalPharmacies || 0}
+  limit={limit}
+  onPageChange={setCurrentPage}
+  loading={allPharmaciesLoading}
+/>
 
 <PharmacyDetailsModal
   pharmacy={selectedPharmacy}

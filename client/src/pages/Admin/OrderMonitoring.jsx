@@ -7,21 +7,25 @@ import OrderStats from '../../components/admin/OrderMonitoring/OrderStats'
 import OrderTable from '../../components/admin/OrderMonitoring/OrderTable'
 import OrderDetailsModal from '../../components/admin/OrderMonitoring/OrderDetailsModal'
 import { getAllAdminOrders ,getAdminOrderStatistics,getAdminOrderDetails} from '../../redux/slices/adminOrderSlice'
+import Pagination from '../../components/Pagination/Pagination'
 const OrderMonitoring = () => {
     const dispatch=useDispatch()
     const {
   orders = [],
   ordersLoading,
   ordersError,
+  pagination={}
 } = useSelector((state) => state.adminOrder || {});
 
 const [selectedOrder, setSelectedOrder] = useState(null);
 const [sidebarOpen, setSidebarOpen] = useState(false);
+const [currentPage, setCurrentPage] = useState(1);
+const limit = 6;
     useEffect(()=>{
-        dispatch(getAllAdminOrders())
+        dispatch(getAllAdminOrders({page:currentPage,limit}))
         dispatch(getAdminOrderStatistics())
 
-    },[dispatch])
+    },[dispatch,currentPage])
   return (
     <div className="min-h-screen bg-[#F7F9FA] lg:flex">
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -61,7 +65,14 @@ const [sidebarOpen, setSidebarOpen] = useState(false);
   order={selectedOrder}
   onClose={() => setSelectedOrder(null)}
 />
-
+<Pagination
+  currentPage={pagination.currentPage || currentPage}
+  totalPages={pagination.totalPages || 0}
+  totalItems={pagination.totalOrders || 0}
+  limit={limit}
+  onPageChange={setCurrentPage}
+  loading={ordersLoading}
+/>
         </main>
        
      

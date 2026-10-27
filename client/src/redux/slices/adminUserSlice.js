@@ -6,9 +6,11 @@ import api from "../../services/api";
 
 export const fetchCustomers=createAsyncThunk(
     'adminUsers/fetchCustomers',
-    async(_,{rejectWithValue})=>{
+    async({page=1,limit=6}={},{rejectWithValue})=>{
         try{
-            const response=await api.get('/admin/customers')
+            const response=await api.get('/admin/customers',{
+              params:{page,limit}
+            })
              console.log("CUSTOMERS API RESPONSE:", response.data)
             return response.data
 
@@ -75,6 +77,14 @@ export const updateCustomerStatus = createAsyncThunk(
 const initialState = {
   customers: [],
   selectedCustomer: null,
+    pagination: {
+    currentPage: 1,
+    totalPages: 0,
+    totalCustomers: 0,
+    limit: 6,
+    hasNextPage: false,
+    hasPrevPage: false,
+  },
   loading: false,
   detailsLoading: false,
   statusLoading: false,
@@ -106,15 +116,18 @@ const adminUserSlice = createSlice({
 
   const payload = action.payload;
 
-  state.customers = Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.customers)
-      ? payload.customers
-      : [];
+  state.customers = Array.isArray(payload?.customers)
+    ? payload.customers
+    : [];
+
+  if (payload?.pagination) {
+    state.pagination = payload.pagination;
+  }
 
   state.error = null;
 
   console.log("Customers saved to Redux:", state.customers);
+  console.log("Pagination saved to Redux:", state.pagination);
 })
       .addCase(fetchCustomers.rejected, (state, action) => {
         state.loading = false;

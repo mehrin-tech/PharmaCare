@@ -149,28 +149,80 @@ export const rejectPharmacy=async(req,res)=>{
 }
 
 // Get all pharmacies
+// export const getAllPharmacies = async (req, res) => {
+//     try {
+//         const pharmacies = await Pharmacy.find()
+//             .populate('user', 'name email phone role isActive')
+//             .sort({ createdAt: -1 })
+
+//         return res.status(200).json({
+//             success: true,
+//             count: pharmacies.length,
+//             pharmacies
+//         })
+
+//     } catch (error) {
+//         console.log('get all pharmacies error:', error)
+
+//         return res.status(500).json({
+//             success: false,
+//             message: 'failed to fetch pharmacies',
+//             error: error.message
+//         })
+//     }
+// }
+
+// Get all pharmacies with pagination
 export const getAllPharmacies = async (req, res) => {
-    try {
-        const pharmacies = await Pharmacy.find()
-            .populate('user', 'name email phone role isActive')
-            .sort({ createdAt: -1 })
+  try {
+    // 1. Get page and limit from query parameters
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(
+      50,
+      Math.max(1, Number(req.query.limit) || 10)
+    );
 
-        return res.status(200).json({
-            success: true,
-            count: pharmacies.length,
-            pharmacies
-        })
+    // 2. Calculate skip
+    const skip = (page - 1) * limit;
 
-    } catch (error) {
-        console.log('get all pharmacies error:', error)
+    // 3. Fetch pharmacies and total count simultaneously
+    const [pharmacies, totalPharmacies] = await Promise.all([
+      Pharmacy.find()
+        .populate("user", "name email phone role isActive")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
 
-        return res.status(500).json({
-            success: false,
-            message: 'failed to fetch pharmacies',
-            error: error.message
-        })
-    }
-}
+      Pharmacy.countDocuments(),
+    ]);
+
+    // 4. Calculate total pages
+    const totalPages = Math.ceil(totalPharmacies / limit);
+
+    // 5. Send response
+    return res.status(200).json({
+      success: true,
+      count: pharmacies.length,
+      pharmacies,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalPharmacies,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.log("get all pharmacies error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch pharmacies",
+      error: error.message,
+    });
+  }
+};
 
 // Activate / Deactivate pharmacy
 export const updatePharmacyStatus = async (req, res) => {

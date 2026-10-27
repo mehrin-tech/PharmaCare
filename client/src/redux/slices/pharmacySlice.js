@@ -24,9 +24,11 @@ export const getNearByPharmacies=createAsyncThunk(
 
 export const getAllPharmacies=createAsyncThunk(
   'pharmacy/getAllPharmacies',
-  async(_,{rejectWithValue})=>{
+  async({page=1,limit=10}={},{rejectWithValue})=>{
     try{
-      const response=await api.get('/admin/pharmacies')
+      const response=await api.get('/admin/pharmacies',{
+        params:{page,limit}
+      })
         console.log("ALL PHARMACIES:", response.data);
       return response.data;
 
@@ -91,6 +93,14 @@ const pharmacySlice=createSlice({
         allPharmaciesLoading: false,
         error:null,
         allPharmaciesError: null,
+        pagination: {
+  currentPage: 1,
+  totalPages: 0,
+  totalPharmacies: 0,
+  limit: 10,
+  hasNextPage: false,
+  hasPrevPage: false,
+},
     },
     reducers:{},
 
@@ -121,11 +131,15 @@ const pharmacySlice=createSlice({
 
   const payload = action.payload;
 
-  state.allPharmacies = Array.isArray(payload)
-    ? payload
-    : Array.isArray(payload?.pharmacies)
-      ? payload.pharmacies
-      : [];
+  state.allPharmacies = Array.isArray(payload?.pharmacies)
+    ? payload.pharmacies
+    : [];
+
+  if (payload?.pagination) {
+    state.pagination = payload.pagination;
+  }
+
+  state.allPharmaciesError = null;
 })
 .addCase(getAllPharmacies.rejected, (state, action) => {
   state.allPharmaciesLoading = false;
