@@ -1,11 +1,11 @@
-import { Routes,Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { CustomerRegister } from "../pages/auth/CustomerRegister";
-import {Login} from '../pages/auth/Login'
-import  {ForgotPassword}  from "../pages/auth/ForgotPassword";
-import {ResetPassword} from "../pages/auth/ResetPassword";
+import { Login } from '../pages/auth/Login'
+import { ForgotPassword } from "../pages/auth/ForgotPassword";
+import { ResetPassword } from "../pages/auth/ResetPassword";
 import CustomerDashboard from "../pages/Customer/CustomerDashboard"
 import Medicines from '../pages/Customer/Medicines'
- import MedicineDetails from "../pages/Customer/MedicineDetails";
+import MedicineDetails from "../pages/Customer/MedicineDetails";
 import CustomerProfile from "../pages/Customer/CustomerProfile"
 import Pharmacies from '../pages/Customer/Pharmacies'
 import PharmacyDetails from "../pages/Customer/PharmacyDetails";
@@ -19,7 +19,7 @@ import OrderDetails from "../pages/Customer/OrderDetails"
 import Prescription from "../pages/Customer/Prescription";
 import Medicine from '../pages/Pharmacy/Medicine'
 import PharmacyLayout from '../layouts/PharmacyLayout'
-import  PharmacyRegistration from '../pages/auth/PharmacyRegistration'
+import PharmacyRegistration from '../pages/auth/PharmacyRegistration'
 import Inventory from '../pages/Pharmacy/Inventory'
 import PharmacyProfile from '../pages/Pharmacy/PharmacyProfile'
 import PrescriptionManagement from "../pages/Pharmacy/PrescriptionManagement";
@@ -36,72 +36,79 @@ import RevenueOverview from '../pages/Admin/RevenueOverview'
 import AnalyticsReports from "../pages/Admin/AnalyticsReports";
 import PharmacyRegistrationStatus from '../pages/Pharmacy/PharmacyRegistrationStatus';
 import LandingPage from "../pages/LandingPage/LandingPage";
+import ProtectedRoute from "./ProtectedRoute";
+import Unauthorized from "../pages/Errors/Unauthorized";
 
-function AppRoutes(){
-    return(
-        <Routes>
-            <Route path="/" element={<LandingPage/>} />
-            <Route path="/register" element={<CustomerRegister/>} />
-            <Route path='/login' element={<Login/>} />
-            <Route path="/forgot-password" element={<ForgotPassword/>} />
-            <Route path="/reset-password/:token" element={<ResetPassword />}/>
-            <Route path="/dashboard" element={<CustomerDashboard />} />
-            <Route path="/medicines" element={<Medicines />} />
-            <Route path="/medicines/:medicineId" element={<MedicineDetails />} />
-            <Route path="/pharmacies" element={<Pharmacies/>}/>
-            <Route  path="/pharmacies/:pharmacyId" element={<PharmacyDetails/>}/>
-<Route
-  path="/profile"
-  element={<CustomerProfile />}
-/>
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/register" element={<CustomerRegister />} />
+      <Route path='/login' element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route element={<ProtectedRoute allowedRoles={['customer']}/>} >
+        <Route path="/dashboard" element={<CustomerDashboard />} />
+        <Route path="/medicines" element={<Medicines />} />
+        <Route path="/medicines/:medicineId" element={<MedicineDetails />} />
+        <Route path="/pharmacies" element={<Pharmacies />} />
+        <Route path="/pharmacies/:pharmacyId" element={<PharmacyDetails />} />
+        <Route
+          path="/profile"
+          element={<CustomerProfile />}
+        />
 
-<Route path="/cart" element={<Cart />} />
-<Route path="/wishlist" element={<Wishlist/>}/>
-<Route path="/checkout" element={<Checkout />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/checkout" element={<Checkout />} />
 
-<Route
-  path="/checkout/add-address"
-  element={<AddAddress />}
-/>
-<Route path="/orders"  element={<MyOrders />}/>
-<Route
-  path="/orders/:orderId"
-  element={<OrderDetails />}
-/>
+        <Route
+          path="/customer/checkout/add-address"
+          element={<AddAddress />}
+        />
+        <Route path="/orders" element={<MyOrders />} />
+        <Route
+          path="/orders/:orderId"
+          element={<OrderDetails />}
+        />
 
-<Route
-  path="/prescription"
-  element={<Prescription />}
-/>
-<Route path='/pharmacy/register' element={<PharmacyRegistration/>}/>
-<Route
-  path="/pharmacy/registration-status"
-  element={<PharmacyRegistrationStatus />}
-/>
-<Route  path='/pharmacy' element={<PharmacyLayout /> }>
+        <Route
+          path="/prescription"
+          element={<Prescription />}
+        />
+      </Route>
+      <Route path='/pharmacy/register' element={<PharmacyRegistration />} />
+      <Route
+        path="/pharmacy/registration-status"
+        element={<PharmacyRegistrationStatus />}
+      />
+      <Route element={<ProtectedRoute allowedRoles={['pharmacy']}/>} >
+      <Route path='/pharmacy' element={<PharmacyLayout />}>
 
-<Route  path='medicines' element={<Medicine />}/>
-<Route path="inventory" element={<Inventory />} />
-<Route path='profile' element={<PharmacyProfile/>} />
-<Route path="prescriptions"  element={<PrescriptionManagement/>}/>
-<Route path="orders" element={<OrderManagement/>} />
-<Route  path="sales&reports" element={<SalesReport/>}/>
-<Route  path="dashboard" element={<PharmacyDashbaord/>}/>
+        <Route path='medicines' element={<Medicine />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path='profile' element={<PharmacyProfile />} />
+        <Route path="prescriptions" element={<PrescriptionManagement />} />
+        <Route path="orders" element={<OrderManagement />} />
+        <Route path="sales&reports" element={<SalesReport />} />
+        <Route path="dashboard" element={<PharmacyDashbaord />} />
+      </Route>
+      </Route>
+
+<Route element={<ProtectedRoute allowedRoles={['admin']}/>} >
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/customers" element={<UserManagement />} />
+      <Route path="/admin/pharma" element={<PharmacyManagement />} />
+      <Route path="/admin/orders" element={<OrderMonitoring />} />
+      <Route path="/admin/revenue" element={<RevenueOverview />} />
+      <Route path="/admin/analytics" element={<AnalyticsReports />} />
+
 </Route>
 
-
-<Route path="/admin/dashboard" element={<AdminDashboard/>} />
-  <Route path="/admin/customers" element={<UserManagement />} />
-  <Route path="/admin/pharma" element={<PharmacyManagement />} />
-  <Route path="/admin/orders" element={<OrderMonitoring/>} />
-  <Route  path="/admin/revenue" element={<RevenueOverview/>}/>
-  <Route path="/admin/analytics" element={<AnalyticsReports/>} />
-
-
-
-<Route path="*" element={<NotFound />} />
-        </Routes>
-    )
+<Route path="/unauthorized" element={<Unauthorized/>} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  )
 }
 
 export default AppRoutes
