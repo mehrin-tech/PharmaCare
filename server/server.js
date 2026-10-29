@@ -24,6 +24,7 @@ import complaintRoutes from './routes/complaintRoutes.js'
 import adminReportRoutes from './routes/adminReportRoutes.js'
 import adminSettingsRoutes from './routes/adminSettingsRoutes.js'
 import profileRoutes from './routes/profileRoutes.js'
+import { errorHandler } from './middleware/errorHandler.js'
 dotenv.config()
 
 const app=express()
@@ -59,12 +60,14 @@ app.use(
 )
 app.use('/api/profile',profileRoutes)
 
+app.use(errorHandler)
 app.get('/api/health',(req,res)=>{
     res.json({
         success:true,
         message:"Pharmacare API is running"
     })
 })
+
 
 const PORT=process.env.PORT || 5000
 

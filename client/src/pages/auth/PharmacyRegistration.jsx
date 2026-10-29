@@ -163,13 +163,7 @@ const PharmacyRegistration = () => {
     },
   });
 
-      // navigate("/pharmacy/registration-status", {
-      //   state: {
-      //     pharmacyId: pharmacy._id,
-      //     message: licenseResponse.data.message,
-      //     pharmacy: licenseResponse.data.pharmacy,
-      //   },
-      // });
+    
     } catch (err) {
       console.error("Registration error:", err.response?.data || err);
   console.log("Status:", err.response?.status);
@@ -225,11 +219,7 @@ const PharmacyRegistration = () => {
             to="/"
             className="relative z-10 flex items-center gap-2"
           >
-            {/* <HeartPulse
-              size={21}
-              strokeWidth={2.4}
-              className="text-emerald-600"
-            /> */}
+           
             <img src={logo} className=" w-[22px] h-[22px] object-contain"/>
             <span className="text-[17px] font-bold tracking-tight text-gray-800">
               Pharma<span className="text-emerald-600">Care</span>

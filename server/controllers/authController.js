@@ -4,24 +4,19 @@ import Pharmacy from '../models/Pharmacy.js'
 import jwt from 'jsonwebtoken'
 import crypto from "crypto"
 import nodemailer from 'nodemailer'
-export const registerUser = async (req,res)=>{
+import { BadRequestError,ConflictError,UnauthorizedError } from '../Utils/error.js'
+export const registerUser = async (req,res,next)=>{
     try{
         const {name,email,password,phone,role}=req.body
 
         //check required fields
         if(!name || !email || !password){
-            return res.status(400).json({
-                success:false,
-                message:"Name, email and password are required ",
-            })
+           return next( new BadRequestError('Name,email,and password are required'))
         }
         //check existing user
         const existingUser = await User.findOne({email})
         if(existingUser){
-            return res.status(409).json({
-                success:false,
-                message:'user already existed',
-            })
+          return next(new ConflictError('user already exists'))
         }
 
         //Hash password
@@ -48,37 +43,32 @@ export const registerUser = async (req,res)=>{
             },
         })
     }catch(error){
-        res.status(500).json({
-            success:false,
-            message:'Registration failed',
-            error:error.message
-        })
+        next(error)
+        // res.status(500).json({
+        //     success:false,
+        //     message:'Registration failed',
+        //     error:error.message
+        // })
     }
 }
 
 
 //Login
 
-export const loginUser =async (req,res)=>{
+export const loginUser =async (req,res,next)=>{
     try{
         const {email,password} = req.body;
 
         //1.validate input
         if(!email || !password){
-            return res.status(400).json({
-                success:false,
-                message:"Email and password are required",
-            })
+          return next(new BadRequestError('email and password are required'))
         }
 
         //2.find user
         const user = await User.findOne({email});
 
         if(!user){
-            return res.status(401).json({
-                success:false,
-                message:'Invalid email or password',
-            })
+          return next(new UnauthorizedError('Unauthorized error'))
         }
 
         //check password
